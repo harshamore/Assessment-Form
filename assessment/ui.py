@@ -21,7 +21,9 @@ TAG = {"isa": "ISA", "ava": "AVA", "rt": "RT"}
 
 CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+/* Fonts come from [theme] in .streamlit/config.toml, not a font-family
+   override here: an override that reaches Streamlit's own elements also hits
+   its Material Symbols icons, which then render as their own names. */
 :root {
   --line: #e3e6ea; --muted: #5c6672; --surface: #ffffff;
   --accent: #1f5eff; --accent-soft: #eef2ff;
@@ -30,11 +32,13 @@ CSS = """
   --neutral: #4a5260; --neutral-soft: #eef0f3;
   --bad: #b3261e; --bad-soft: #fdeceb;
   --isa: #6b3fa0; --isa-soft: #f1ebfa;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
 }
-html, body, [class*="st-"], .stMarkdown, button, input, textarea, select {
-  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+.mono, dl.answers dd.mono { font-family: var(--font-mono); }
+/* Belt and braces: never let a font rule reach an icon ligature. */
+[data-testid="stIconMaterial"], span[class*="material-symbols"], .material-icons {
+  font-family: 'Material Symbols Rounded' !important;
 }
-code, .mono, pre, textarea { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
 .chip {
   display: inline-block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
   padding: 2px 6px; border-radius: 4px; margin-right: 6px; vertical-align: 2px;
@@ -71,7 +75,7 @@ code, .mono, pre, textarea { font-family: 'IBM Plex Mono', ui-monospace, monospa
 }
 .tcard.muted .order { color: var(--muted); }
 .tcard .num {
-  font-family: 'IBM Plex Mono', monospace; font-size: 1.6rem; font-weight: 600; line-height: 1;
+  font-family: var(--font-mono); font-size: 1.6rem; font-weight: 600; line-height: 1;
 }
 .tcard .num small { font-size: 0.85rem; color: var(--muted); font-weight: 400; }
 .tcard ul { margin: 2px 0 0; padding-left: 1.1em; font-size: 0.85rem; }
@@ -80,7 +84,7 @@ code, .mono, pre, textarea { font-family: 'IBM Plex Mono', ui-monospace, monospa
 .bar { display: grid; grid-template-columns: 9em 1fr 3.6em; gap: 8px; align-items: center; font-size: 0.78rem; margin-bottom: 5px; }
 .bar .track { background: var(--neutral-soft); border-radius: 999px; height: 7px; overflow: hidden; }
 .bar .fill { background: var(--accent); height: 100%; }
-.bar .val { font-family: 'IBM Plex Mono', monospace; color: var(--muted); text-align: right; }
+.bar .val { font-family: var(--font-mono); color: var(--muted); text-align: right; }
 ul.flags { list-style: none; margin: 0; padding: 0; font-size: 0.88rem; }
 ul.flags li {
   border-left: 3px solid var(--neutral); background: var(--neutral-soft);
@@ -91,7 +95,7 @@ ul.flags li.warn { border-color: var(--warn); background: var(--warn-soft); }
 ul.flags li.none { border-color: var(--good); background: var(--good-soft); }
 ol.agenda { margin: 0; padding-left: 0; list-style: none; font-size: 0.86rem; }
 ol.agenda li { display: grid; grid-template-columns: 3.4em 1fr; gap: 8px; margin-bottom: 8px; }
-ol.agenda .t { font-family: 'IBM Plex Mono', monospace; color: var(--muted); }
+ol.agenda .t { font-family: var(--font-mono); color: var(--muted); }
 dl.answers { display: grid; grid-template-columns: 11em 1fr; gap: 4px 12px; font-size: 0.86rem; margin: 0; }
 dl.answers dt { color: var(--muted); }
 dl.answers dd { margin: 0; }

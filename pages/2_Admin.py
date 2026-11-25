@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 
 from assessment import storage, ui
-from assessment.auth import admin_ok, sign_in_sidebar
+from assessment.auth import admin_ok
 from assessment.scoring import NAME, ROUTE_TEXT, SHORT, TRACKS
 
 ROUTE_OPTIONS = ["Any route", *ROUTE_TEXT.values()]
@@ -37,7 +37,6 @@ def table(rows: list[dict]) -> pd.DataFrame:
 
 def main() -> None:
     ui.page("Admin", icon="🔐")
-    sign_in_sidebar()
 
     st.title("Admin")
     st.markdown('<p class="hint">Every registration from every partner.</p>', unsafe_allow_html=True)

@@ -29,7 +29,7 @@ def test_example_config_matches_the_parity_fixture():
 
 
 def test_form_opens_on_step_one():
-    at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=TIMEOUT).run()
+    at = AppTest.from_file(str(ROOT / "Intake_Form.py"), default_timeout=TIMEOUT).run()
     assert not at.exception
     assert at.title[0].value == "Identity & AI Security Assessments"
     assert "1 · Partner" in markdown_text(at)
@@ -37,7 +37,7 @@ def test_form_opens_on_step_one():
 
 
 def test_continue_on_an_empty_step_shows_the_spec_message():
-    at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=TIMEOUT).run()
+    at = AppTest.from_file(str(ROOT / "Intake_Form.py"), default_timeout=TIMEOUT).run()
     at.button[0].click().run()
     assert not at.exception
     assert at.error[0].value == "Enter your organisation and region or country."
@@ -45,7 +45,7 @@ def test_continue_on_an_empty_step_shows_the_spec_message():
 
 
 def test_example_answers_reach_the_result_screen():
-    at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=TIMEOUT)
+    at = AppTest.from_file(str(ROOT / "Intake_Form.py"), default_timeout=TIMEOUT)
     at.session_state["store"] = copy.deepcopy(EXAMPLE)
     at.session_state["step"] = 5
     at.run()
@@ -65,7 +65,7 @@ def test_example_answers_reach_the_result_screen():
 
 
 def test_submitting_saves_the_registration():
-    at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=TIMEOUT)
+    at = AppTest.from_file(str(ROOT / "Intake_Form.py"), default_timeout=TIMEOUT)
     at.session_state["store"] = copy.deepcopy(EXAMPLE)
     at.session_state["step"] = 5
     at.run()
@@ -78,7 +78,7 @@ def test_submitting_saves_the_registration():
 
 
 def test_register_another_customer_keeps_partner_details():
-    at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=TIMEOUT)
+    at = AppTest.from_file(str(ROOT / "Intake_Form.py"), default_timeout=TIMEOUT)
     at.session_state["store"] = copy.deepcopy(EXAMPLE)
     at.session_state["step"] = 5
     at.run()
@@ -90,6 +90,18 @@ def test_register_another_customer_keeps_partner_details():
     assert at.session_state["store"]["partner"] == EXAMPLE["partner"]
     assert at.session_state["store"]["company"] == ""
     assert at.session_state["store"]["idps"] == []
+
+
+def test_qualification_page_shows_the_newest_registration():
+    """With no registration chosen, the page opens the most recent one."""
+    result = score(EXAMPLE)
+    reg_id = storage.save_registration(EXAMPLE, result, "note")
+    at = AppTest.from_file(str(ROOT / "pages" / "1_Qualification.py"), default_timeout=TIMEOUT).run()
+    assert not at.exception
+    assert "Example registration" not in markdown_text(at)
+    assert at.session_state.get("current_reg_id") is None
+    gate = at.checkbox(key=f"gate_isa_0_{reg_id}")
+    assert gate is not None
 
 
 def test_qualification_page_falls_back_to_the_example():
@@ -119,24 +131,8 @@ def test_qualification_gate_ticks_are_saved():
     assert "Not ready · 1 of 5" in markdown_text(at)
 
 
-def test_my_registrations_needs_sign_in():
-    at = AppTest.from_file(str(ROOT / "pages" / "2_My_registrations.py"), default_timeout=TIMEOUT).run()
-    assert not at.exception
-    assert "Sign in with your work email in the sidebar to see your registrations." in at.info[0].value
-
-
-def test_my_registrations_lists_the_partners_own_rows():
-    result = score(EXAMPLE)
-    storage.save_registration(EXAMPLE, result, "note")
-    at = AppTest.from_file(str(ROOT / "pages" / "2_My_registrations.py"), default_timeout=TIMEOUT)
-    at.session_state["partner_email"] = EXAMPLE["partner"]["email"]
-    at.run()
-    assert not at.exception
-    assert at.dataframe[0].value["Customer"].tolist() == [EXAMPLE["company"]]
-
-
 def test_admin_page_is_locked_without_a_password():
-    at = AppTest.from_file(str(ROOT / "pages" / "3_Admin.py"), default_timeout=TIMEOUT).run()
+    at = AppTest.from_file(str(ROOT / "pages" / "2_Admin.py"), default_timeout=TIMEOUT).run()
     assert not at.exception
     assert at.warning[0].value.startswith("Set `admin_password`")
     assert not at.dataframe
@@ -144,7 +140,7 @@ def test_admin_page_is_locked_without_a_password():
 
 def test_answers_survive_continue_and_back():
     """Widgets are re-seeded from session_state, so stepping back doesn't lose answers."""
-    at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=TIMEOUT).run()
+    at = AppTest.from_file(str(ROOT / "Intake_Form.py"), default_timeout=TIMEOUT).run()
     partner = EXAMPLE["partner"]
     at.text_input[0].set_value(partner["org"])
     at.text_input[1].set_value(partner["name"])
@@ -169,7 +165,7 @@ def test_answers_survive_continue_and_back():
 
 
 def test_none_yet_is_exclusive_with_real_agent_platforms():
-    at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=TIMEOUT)
+    at = AppTest.from_file(str(ROOT / "Intake_Form.py"), default_timeout=TIMEOUT)
     at.session_state["store"] = copy.deepcopy(EXAMPLE)
     at.session_state["step"] = 3
     at.run()
@@ -185,7 +181,7 @@ def test_none_yet_is_exclusive_with_real_agent_platforms():
 
 
 def test_ai_step_hides_red_teaming_questions_when_the_customer_only_uses_saas():
-    at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=TIMEOUT)
+    at = AppTest.from_file(str(ROOT / "Intake_Form.py"), default_timeout=TIMEOUT)
     at.session_state["store"] = copy.deepcopy(EXAMPLE)
     at.session_state["step"] = 4
     at.run()
@@ -196,3 +192,12 @@ def test_ai_step_hides_red_teaming_questions_when_the_customer_only_uses_saas():
     assert at.session_state["store"]["scope"] == []
     assert at.session_state["store"]["endpoint"] == ""
     assert len(at.radio) == 1
+
+
+def test_no_partner_sign_in_anywhere():
+    """Sign-in was removed: the intake form is open and only Admin is gated."""
+    for script in ("Intake_Form.py", "pages/1_Qualification.py", "pages/2_Admin.py"):
+        at = AppTest.from_file(str(ROOT / script), default_timeout=TIMEOUT).run()
+        assert not at.exception, script
+        assert "Partner sign-in" not in markdown_text(at), script
+        assert not [b for b in at.button if b.label in ("Sign in", "Sign out")], script

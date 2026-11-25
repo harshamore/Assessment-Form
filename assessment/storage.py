@@ -163,11 +163,6 @@ def list_registrations(
     return [_hydrate(r) for r in rows]
 
 
-def latest_for_partner(partner_email: str, path: str | Path | None = None) -> dict[str, Any] | None:
-    rows = list_registrations(partner_email=partner_email, limit=1, path=path)
-    return rows[0] if rows else None
-
-
 def save_gates(reg_id: int, gates: dict[str, list[int]], path: str | Path | None = None) -> None:
     """Persist the ticked go/no-go items, as {track: [indexes]}."""
     clean = {t: sorted({int(i) for i in gates.get(t, [])}) for t in TRACKS if gates.get(t)}

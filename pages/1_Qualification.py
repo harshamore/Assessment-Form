@@ -9,22 +9,20 @@ import pandas as pd
 import streamlit as st
 
 from assessment import storage, ui
-from assessment.auth import sign_in_sidebar
 from assessment.scoring import NAME, TRACKS, agents_in_use, handoff_note, label, labels, score
 from assessment.ui import CONTENT, EXAMPLE
 
 
-def pick_registration(partner: str):
+def pick_registration():
     """The registration being looked at: the chosen one, the newest, or the example."""
     reg_id = st.session_state.get("current_reg_id")
     if reg_id:
         reg = storage.get_registration(int(reg_id))
         if reg:
             return reg, False
-    if partner:
-        reg = storage.latest_for_partner(partner)
-        if reg:
-            return reg, False
+    newest = storage.list_registrations(limit=1)
+    if newest:
+        return newest[0], False
     return {"answers": EXAMPLE, "gates": {}, "id": None}, True
 
 
@@ -141,7 +139,6 @@ def how_it_works() -> None:
 
 def main() -> None:
     ui.page("Qualification", icon="📋")
-    partner = sign_in_sidebar()
 
     st.title("Qualification")
     st.markdown(
@@ -149,7 +146,7 @@ def main() -> None:
         "registration, a handoff note for your Cisco account manager, and a scoping call with "
         "go/no-go gate for each assessment.</p>", unsafe_allow_html=True)
 
-    registration, is_example = pick_registration(partner)
+    registration, is_example = pick_registration()
     answers = registration["answers"]
     result = score(answers)
 

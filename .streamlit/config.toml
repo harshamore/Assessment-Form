@@ -4,7 +4,12 @@ primaryColor = "#1f5eff"
 backgroundColor = "#ffffff"
 secondaryBackgroundColor = "#f6f7f9"
 textColor = "#15181d"
-font = "sans serif"
+# Set the fonts through the theme rather than a CSS font-family override: an
+# override that reaches Streamlit's own elements also hits its Material Symbols
+# icons, which then render as their own names (e.g. the sidebar arrow showing
+# "keyboard_double_arrow_right").
+font = "IBM Plex Sans:https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap, sans-serif"
+codeFont = "IBM Plex Mono:https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap, monospace"
 
 [server]
 headless = true

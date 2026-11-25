@@ -46,14 +46,13 @@ def test_missing_registration_is_none(db):
     assert storage.get_registration(999, path=db) is None
 
 
-def test_newest_first_and_latest_for_partner(db):
+def test_newest_first(db):
     first = save(EXAMPLE, db)
     other = copy.deepcopy(EXAMPLE)
     other["company"] = "Second Customer"
     second = save(other, db)
     assert [r["id"] for r in storage.list_registrations(path=db)] == [second, first]
-    latest = storage.latest_for_partner(EXAMPLE["partner"]["email"], path=db)
-    assert latest["id"] == second
+    assert storage.list_registrations(limit=1, path=db)[0]["id"] == second
 
 
 def test_filters(db):

@@ -1,4 +1,4 @@
-"""Discovery form: the 5-step wizard partners fill in with a customer.
+"""Intake form: the 5-step wizard partners fill in with a customer.
 
 Scoring, routing and the handoff note all come from assessment.scoring. This
 module only collects answers, validates them and saves the registration.
@@ -8,7 +8,6 @@ from __future__ import annotations
 import streamlit as st
 
 from assessment import notify, storage, ui
-from assessment.auth import secret, sign_in_sidebar
 from assessment.scoring import agents_in_use, handoff_note, score
 from assessment.ui import CONTENT
 from assessment.validate import validate_step
@@ -229,9 +228,8 @@ def show_result(store: dict) -> None:
 
 # ---------- page ----------
 def main() -> None:
-    ui.page("Discovery form")
+    ui.page("Intake form")
     init_state()
-    sign_in_sidebar()
     store = st.session_state.store
 
     st.caption("Free Cisco security assessments · partner intake")

@@ -99,7 +99,9 @@ The HTML prototype couldn't save anything. The app must:
 - **Admin** page (behind an admin password in `st.secrets`): every registration, filters (partner, PAM, country, recommended assessment, route), CSV export.
 - Optional, behind a config flag: send the handoff note by email to the PAM (SMTP settings in `st.secrets`). Off by default.
 
-**Identifying the partner:** a simple partner email + access code from `st.secrets` is enough for v1. Don't build full auth.
+**Identifying the partner:** ~~a simple partner email + access code from `st.secrets`~~. Removed
+after v1: the intake form is open and a registration is attributed to whoever the partner details
+name. Only the Admin page is gated, by `admin_password`.
 
 ## Non-goals for v1
 
