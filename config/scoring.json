@@ -1,0 +1,423 @@
+{
+  "thresholds": {
+    "fast": 70,
+    "review": 40
+  },
+  "personal_email_domains": [
+    "gmail.com",
+    "yahoo.com",
+    "hotmail.com",
+    "outlook.com",
+    "live.com",
+    "icloud.com",
+    "proton.me",
+    "protonmail.com",
+    "rediffmail.com"
+  ],
+  "ava_supported_edr": [
+    "crowdstrike",
+    "defender"
+  ],
+  "ava_agent_breadth_points": {
+    "3_or_more": 11,
+    "2": 8,
+    "1": 5
+  },
+  "isa_supported_idp_points": 15,
+  "human_gap_threshold_for_both_identity": 2,
+  "points": {
+    "isa": {
+      "roAccess": {
+        "yes": 15,
+        "approval": 10,
+        "no": 0
+      },
+      "singleView": {
+        "no": 8,
+        "partial": 5,
+        "yes": 1
+      },
+      "mfa": {
+        "unknown": 7,
+        "partial": 7,
+        "all": 4,
+        "phish": 1
+      },
+      "dormant": {
+        "never": 7,
+        "annual": 5,
+        "quarterly": 2,
+        "cont": 0
+      },
+      "nhiInv": {
+        "none": 7,
+        "unknown": 7,
+        "partial": 5,
+        "full": 1
+      },
+      "agentVis": {
+        "no": 6,
+        "partly": 4,
+        "yes": 1
+      },
+      "nhiRot": {
+        "none": 6,
+        "unknown": 6,
+        "manual": 3,
+        "auto": 1
+      },
+      "drivers": {
+        "idincident": 10,
+        "audit": 10,
+        "idp": 8,
+        "agentrollout": 8,
+        "regulator": 8,
+        "board": 6
+      },
+      "deadline": {
+        "d30": 10,
+        "m3": 8,
+        "m6": 4,
+        "none": 0
+      },
+      "humans": {
+        "gt20k": 15,
+        "5to20k": 12,
+        "1to5k": 9,
+        "lt1k": 5
+      }
+    },
+    "ava": {
+      "edr": {
+        "crowdstrike": 20,
+        "defender": 20
+      },
+      "residency": {
+        "us": 15,
+        "approval": 8,
+        "unsure": 8,
+        "sovereign": 0
+      },
+      "agentVis": {
+        "no": 12,
+        "partly": 8,
+        "yes": 2
+      },
+      "agentAuth": {
+        "delegated": 12,
+        "unknown": 12,
+        "shared": 10,
+        "dedicated": 2
+      },
+      "drivers": {
+        "agentrollout": 10,
+        "idincident": 8,
+        "regulator": 8,
+        "board": 6,
+        "audit": 6
+      },
+      "deadline": {
+        "d30": 10,
+        "m3": 8,
+        "m6": 4,
+        "none": 0
+      },
+      "size": {
+        "gt5k": 10,
+        "1to5k": 7,
+        "lt1k": 4
+      }
+    },
+    "rt": {
+      "modelType": {
+        "hosted": 8,
+        "selfhosted": 10,
+        "finetuned": 10,
+        "unsure": 2
+      },
+      "count": {
+        "one": 4,
+        "few": 5,
+        "many": 5
+      },
+      "endpoint": {
+        "staging": 15,
+        "prod": 10,
+        "soon": 7,
+        "no": 0
+      },
+      "stage": {
+        "prod": 8,
+        "launch": 10,
+        "pilot": 5,
+        "explore": 0
+      },
+      "deadline": {
+        "d30": 10,
+        "m3": 8,
+        "m6": 4,
+        "none": 0
+      },
+      "drivers": {
+        "agentrollout": 5,
+        "ailaunch": 5,
+        "modelchange": 5,
+        "regulator": 5,
+        "board": 5,
+        "vendor": 3
+      },
+      "role": {
+        "ciso": 10,
+        "risk": 8,
+        "ai": 7,
+        "iam": 6,
+        "app": 6,
+        "seceng": 6,
+        "other": 2
+      },
+      "owner": {
+        "yes": 10,
+        "unsure": 4,
+        "no": 0
+      },
+      "prior": {
+        "none": 5,
+        "adhoc": 4,
+        "old": 3,
+        "recent": 1
+      },
+      "industry": {
+        "bfsi": 10,
+        "gov": 9,
+        "health": 8,
+        "telco": 8,
+        "retail": 6,
+        "tech": 6,
+        "other": 5
+      },
+      "size": {
+        "gt5k": 10,
+        "1to5k": 7,
+        "lt1k": 4
+      }
+    }
+  },
+  "areas": {
+    "isa": [
+      {
+        "key": "ready",
+        "label": "Readiness",
+        "max": 30
+      },
+      {
+        "key": "gap",
+        "label": "Visibility gap",
+        "max": 35
+      },
+      {
+        "key": "trigger",
+        "label": "Trigger",
+        "max": 20
+      },
+      {
+        "key": "fit",
+        "label": "Identity scale",
+        "max": 15
+      }
+    ],
+    "ava": [
+      {
+        "key": "ready",
+        "label": "Readiness",
+        "max": 35
+      },
+      {
+        "key": "gap",
+        "label": "Agent visibility gap",
+        "max": 35
+      },
+      {
+        "key": "trigger",
+        "label": "Trigger",
+        "max": 20
+      },
+      {
+        "key": "fit",
+        "label": "Fit",
+        "max": 10
+      }
+    ],
+    "rt": [
+      {
+        "key": "target",
+        "label": "Target readiness",
+        "max": 30
+      },
+      {
+        "key": "trigger",
+        "label": "Trigger",
+        "max": 25
+      },
+      {
+        "key": "authority",
+        "label": "Authority to act",
+        "max": 25
+      },
+      {
+        "key": "fit",
+        "label": "Fit",
+        "max": 20
+      }
+    ]
+  },
+  "rubric_fields": {
+    "isa": [
+      {
+        "area": "ready",
+        "field": "idps",
+        "label": "Supported identity provider",
+        "scale": "Any listed provider 15 \u00b7 Other or not sure 0",
+        "max": 15
+      },
+      {
+        "area": "ready",
+        "field": "roAccess",
+        "label": "Read-only access",
+        "scale": "Yes 15 \u00b7 Needs approval 10 \u00b7 No 0"
+      },
+      {
+        "area": "gap",
+        "field": "singleView"
+      },
+      {
+        "area": "gap",
+        "field": "mfa"
+      },
+      {
+        "area": "gap",
+        "field": "dormant",
+        "label": "Account reviews"
+      },
+      {
+        "area": "gap",
+        "field": "nhiInv",
+        "label": "NHI inventory"
+      },
+      {
+        "area": "gap",
+        "field": "agentVis",
+        "label": "Agent visibility, or credential rotation if no agents",
+        "scale": "No 6 \u00b7 Partly 4 \u00b7 Yes 1 / Long-lived or unknown 6 \u00b7 Manual 3 \u00b7 Automated 1"
+      },
+      {
+        "area": "trigger",
+        "field": "drivers",
+        "label": "Drivers (highest counts)",
+        "scale": "Identity incident or audit 10 \u00b7 Migration, agent rollout or regulator 8 \u00b7 Board 6"
+      },
+      {
+        "area": "trigger",
+        "field": "deadline"
+      },
+      {
+        "area": "fit",
+        "field": "humans"
+      }
+    ],
+    "ava": [
+      {
+        "area": "ready",
+        "field": "edr",
+        "scale": "CrowdStrike Falcon or Microsoft Defender 20 \u00b7 Others 0 (not eligible)"
+      },
+      {
+        "area": "ready",
+        "field": "residency",
+        "scale": "Yes 15 \u00b7 Needs approval or not sure 8 \u00b7 Must stay in-region 0 (not eligible)"
+      },
+      {
+        "area": "gap",
+        "field": "agentVis"
+      },
+      {
+        "area": "gap",
+        "field": "agentAuth"
+      },
+      {
+        "area": "gap",
+        "field": "agentsUse",
+        "label": "Agent platforms in use",
+        "scale": "3 or more 11 \u00b7 2 8 \u00b7 1 5",
+        "max": 11
+      },
+      {
+        "area": "trigger",
+        "field": "drivers",
+        "label": "Drivers (highest counts)",
+        "scale": "Agent rollout 10 \u00b7 Identity incident or regulator 8 \u00b7 Board or audit 6"
+      },
+      {
+        "area": "trigger",
+        "field": "deadline"
+      },
+      {
+        "area": "fit",
+        "field": "size"
+      }
+    ],
+    "rt": [
+      {
+        "area": "target",
+        "field": "endpoint",
+        "label": "Reachable endpoint"
+      },
+      {
+        "area": "target",
+        "field": "modelType"
+      },
+      {
+        "area": "target",
+        "field": "count",
+        "scale": "2 or more 5 \u00b7 1 4"
+      },
+      {
+        "area": "trigger",
+        "field": "stage"
+      },
+      {
+        "area": "trigger",
+        "field": "deadline"
+      },
+      {
+        "area": "trigger",
+        "field": "drivers",
+        "label": "Drivers (highest counts)",
+        "scale": "Agent rollout, AI launch, model change, regulator or board 5 \u00b7 Choosing models 3"
+      },
+      {
+        "area": "authority",
+        "field": "role",
+        "scale": "CISO 10 \u00b7 Risk 8 \u00b7 AI/ML 7 \u00b7 IAM, app or security engineer 6 \u00b7 Other 2"
+      },
+      {
+        "area": "authority",
+        "field": "owner",
+        "label": "Owner for findings"
+      },
+      {
+        "area": "authority",
+        "field": "prior",
+        "label": "Prior testing"
+      },
+      {
+        "area": "fit",
+        "field": "industry",
+        "scale": "Financial services 10 \u00b7 Government 9 \u00b7 Health or telco 8 \u00b7 Others 5\u20136"
+      },
+      {
+        "area": "fit",
+        "field": "size"
+      }
+    ]
+  }
+}

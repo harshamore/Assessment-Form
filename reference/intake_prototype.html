@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Identity &amp; AI Assessment Intake</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a two-pane intake — context on the left, a 3-step form on the right; partner view is a scorecard dashboard. */
+:root {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --ink: #16202a;
+  --muted: #5b6672;
+  --line: #dde1e6;
+  --accent: #1f5f8b;
+  --accent-soft: #e5eef5;
+  --good: #1e7a4c; --good-soft: #e3f3ea;
+  --warn: #9a6200; --warn-soft: #fbf0dc;
+  --neutral: #55606c; --neutral-soft: #eceef1;
+  --bad: #a83a32; --bad-soft: #f8e6e4;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101519; --surface: #182027; --ink: #e6ebef; --muted: #9aa6b1; --line: #2a343d;
+    --accent: #6fb1dd; --accent-soft: #1b2e3c;
+    --good: #6cc996; --good-soft: #17301f; --warn: #e3b25a; --warn-soft: #33281a;
+    --neutral: #a7b1bb; --neutral-soft: #232b33; --bad: #ec8a80; --bad-soft: #3a1f1d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101519; --surface: #182027; --ink: #e6ebef; --muted: #9aa6b1; --line: #2a343d;
+  --accent: #6fb1dd; --accent-soft: #1b2e3c;
+  --good: #6cc996; --good-soft: #17301f; --warn: #e3b25a; --warn-soft: #33281a;
+  --neutral: #a7b1bb; --neutral-soft: #232b33; --bad: #ec8a80; --bad-soft: #3a1f1d;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+h1, h2, h3 { text-wrap: balance; line-height: 1.25; margin: 0; }
+h1 { font-size: 1.6rem; font-weight: 700; }
+h2 { font-size: 1.15rem; font-weight: 600; }
+h3 { font-size: 0.95rem; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--accent); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+header.top { background: var(--surface); border-bottom: 1px solid var(--line); }
+header.top .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-top: 14px; padding-bottom: 14px; }
+.brand { display: flex; flex-direction: column; gap: 2px; }
+.brand small { color: var(--muted); font-size: 0.8rem; letter-spacing: 0.02em; }
+.brand strong { font-size: 1rem; }
+.tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 8px; border: 1px solid var(--line); }
+.tabs a { text-decoration: none; color: var(--muted); padding: 6px 14px; border-radius: 6px; font-weight: 500; font-size: 0.9rem; }
+.tabs a[aria-current="page"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+
+main { padding: 28px 0 56px; }
+.view[hidden] { display: none; }
+
+/* Customer view */
+.intake { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 28px; align-items: start; }
+.context { display: flex; flex-direction: column; gap: 20px; padding-top: 6px; }
+.context .lede { color: var(--muted); max-width: 46ch; }
+.context ul { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 6px; }
+.context li::marker { color: var(--accent); }
+.fact { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 0.9rem; }
+.fact dt { color: var(--muted); }
+.fact dd { margin: 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 24px; }
+.steps { display: flex; gap: 8px; margin-bottom: 20px; }
+.steps li { list-style: none; flex: 1; font-size: 0.78rem; color: var(--muted); border-top: 3px solid var(--line); padding-top: 6px; }
+.steps li.done, .steps li.current { border-top-color: var(--accent); color: var(--ink); }
+.steps ol, ol.steps { padding: 0; margin: 0 0 20px; }
+.step { display: flex; flex-direction: column; gap: 18px; }
+.step[hidden] { display: none; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+label, legend { font-weight: 500; font-size: 0.9rem; }
+.hint { color: var(--muted); font-size: 0.8rem; font-weight: 400; }
+input[type="text"], input[type="email"], select, textarea {
+  font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 9px 11px; width: 100%;
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, .tabs a:focus-visible, .choice input:focus-visible + span {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.choices { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.choices.wide { grid-template-columns: 1fr; }
+.choice { position: relative; display: block; }
+.choice input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.choice span { display: block; border: 1px solid var(--line); border-radius: 6px; padding: 9px 11px; font-size: 0.88rem; font-weight: 400; cursor: pointer; height: 100%; }
+.choice input:checked + span { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.attest { display: flex; gap: 10px; align-items: flex-start; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 12px; font-size: 0.88rem; font-weight: 400; }
+.attest input { margin-top: 4px; }
+.error { color: var(--bad); font-size: 0.85rem; min-height: 1.2em; }
+.actions { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+button { font: inherit; font-weight: 600; border-radius: 6px; padding: 9px 18px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+:root[data-theme="dark"] button.primary { color: #0d1418; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) button.primary { color: #0d1418; } }
+button:hover { filter: brightness(0.97); }
+
+.result { display: flex; flex-direction: column; gap: 14px; }
+.result[hidden] { display: none; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; width: fit-content; }
+.pill.fast { background: var(--good-soft); color: var(--good); }
+.pill.review { background: var(--warn-soft); color: var(--warn); }
+.pill.selfserve { background: var(--neutral-soft); color: var(--neutral); }
+.pill.go { background: var(--good-soft); color: var(--good); }
+.pill.nogo { background: var(--bad-soft); color: var(--bad); }
+.result ol { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
+.linkbox { font-size: 0.88rem; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; word-break: break-all; }
+
+/* Partner view */
+.partner { display: flex; flex-direction: column; gap: 22px; }
+.config { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+.summary { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; }
+.score { font-family: var(--font-mono); font-size: 3rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+.score small { font-size: 1rem; color: var(--muted); font-weight: 400; }
+.tag { font-size: 0.75rem; color: var(--muted); border: 1px dashed var(--line); border-radius: 4px; padding: 1px 6px; width: fit-content; }
+.bars { display: flex; flex-direction: column; gap: 12px; margin-top: 18px; }
+.bar { display: grid; grid-template-columns: 9.5em 1fr 4em; gap: 10px; align-items: center; font-size: 0.86rem; }
+.track { height: 8px; background: var(--neutral-soft); border-radius: 999px; overflow: hidden; }
+.fill { height: 100%; background: var(--accent); border-radius: 999px; }
+.bar .mono { text-align: right; color: var(--muted); }
+.flags { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.flags li { border-left: 3px solid var(--warn); background: var(--warn-soft); padding: 8px 10px; border-radius: 0 6px 6px 0; font-size: 0.86rem; }
+.flags li.crit { border-left-color: var(--bad); background: var(--bad-soft); }
+.flags li.none { border-left-color: var(--good); background: var(--good-soft); }
+.answers { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 0.85rem; margin: 0; }
+.answers dt { color: var(--muted); }
+.answers dd { margin: 0; }
+textarea.note { font-family: var(--font-mono); font-size: 0.8rem; min-height: 220px; resize: vertical; }
+.copyrow { display: flex; align-items: center; gap: 10px; }
+.copyrow span { font-size: 0.85rem; color: var(--muted); }
+.agenda { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.agenda li { display: grid; grid-template-columns: 4.2em 1fr; gap: 10px; font-size: 0.88rem; }
+.agenda .mono { color: var(--accent); font-weight: 600; }
+.checks { display: flex; flex-direction: column; gap: 8px; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.88rem; font-weight: 400; }
+.check input { margin-top: 4px; }
+.gatehead { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.redirect { margin: 0; padding-left: 1.1em; font-size: 0.86rem; display: flex; flex-direction: column; gap: 6px; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.84rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; }
+td.mono { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.section-head { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+.section-head p { color: var(--muted); font-size: 0.88rem; }
+
+@media (max-width: 860px) {
+  .intake, .grid2 { grid-template-columns: 1fr; }
+  .config { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .row { grid-template-columns: 1fr; }
+  .panel { padding: 18px; }
+  .summary { grid-template-columns: 1fr; }
+  .bar { grid-template-columns: 7.5em 1fr 3.5em; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fill { transition: width 300ms ease; }
+}
+[hidden] { display: none !important; }
+.chip { display: inline-block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; padding: 1px 7px; border-radius: 4px; margin-right: 6px; vertical-align: 1px; }
+.chip.isa { background: #e8e4f6; color: #4b3a8c; }
+.chip.rt { background: var(--accent-soft); color: var(--accent); }
+:root[data-theme="dark"] .chip.isa { background: #2a2342; color: #b7a8ef; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip.isa { background: #2a2342; color: #b7a8ef; } }
+.pill.nurture { background: var(--neutral-soft); color: var(--neutral); }
+.pill.notready { background: var(--bad-soft); color: var(--bad); }
+.tracks { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+.tcard { border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--surface); min-width: 0; }
+.tcard.primary { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.tcard.muted { opacity: 0.85; }
+.tcard ul { margin: 0; padding-left: 1.1em; font-size: 0.86rem; display: flex; flex-direction: column; gap: 4px; }
+.tcard .num { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; }
+.tcard .num small { font-size: 0.85rem; color: var(--muted); font-weight: 400; }
+.tcard .order { font-size: 0.75rem; font-weight: 600; color: var(--accent); letter-spacing: 0.03em; text-transform: uppercase; }
+.tcard .bar { grid-template-columns: 8.5em 1fr 3.5em; }
+.chip.ava { background: var(--warn-soft); color: var(--warn); }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; align-items: start; }
+@media (max-width: 1000px) { .grid3 { grid-template-columns: 1fr; } }
+.reco strong { font-size: 1.05rem; }
+.reco .seq { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.9rem; font-weight: 600; }
+.reco { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 14px; border-radius: 0 8px 8px 0; display: flex; flex-direction: column; gap: 4px; }
+.subhead { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin: 4px 0 -6px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <small>Free Cisco security assessments · partner intake</small>
+      <strong>Identity &amp; AI Security Assessments</strong>
+    </div>
+    <nav class="tabs" aria-label="Views">
+      <a href="#intake-form" id="tab-customer">Discovery form</a>
+      <a href="#partner" id="tab-partner">Qualification</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- INTAKE VIEW -->
+  <section class="view" id="view-customer" aria-labelledby="c-title">
+    <div class="intake">
+      <div class="context">
+        <h1 id="c-title">Find the right free assessment for your customer</h1>
+        <p class="lede">Work through these discovery questions with your customer, ideally with their security, identity and AI leads on the call. The answers decide which Cisco assessments fit, and in what order. It takes about 8 minutes.</p>
+        <div>
+          <h3><span class="chip isa">ISA</span>Identity Security Assessment</h3>
+          <ul>
+            <li>Human, non-human and AI agent identities, on a sovereign Cisco Identity Intelligence instance</li>
+            <li>Read-only API connection to the customer's identity providers. Nothing is deployed and production isn't affected.</li>
+            <li>Findings on IAM hygiene, dormant and privileged accounts, MFA strength and gaps, and unusual activity</li>
+            <li>Agent and non-human visibility is basic compared with AVA</li>
+            <li>Data can take up to 14 days to stabilise after connection</li>
+          </ul>
+        </div>
+        <div>
+          <h3><span class="chip ava">AVA</span>Agent Visibility Assessment</h3>
+          <ul>
+            <li>AI agent identities only, in more depth than ISA</li>
+            <li>Integrates with CrowdStrike Falcon or Microsoft Defender to find agents</li>
+            <li>Runs on a US-hosted Cisco Identity Intelligence instance</li>
+            <li>One-week assessment with a PDF readout</li>
+          </ul>
+        </div>
+        <div>
+          <h3><span class="chip rt">RT</span>AI Red Teaming Assessment</h3>
+          <ul>
+            <li>Automated adversarial testing of up to three models, agents or AI applications</li>
+            <li>Jailbreaks, prompt injection, harmful output, data and system-prompt leakage, and tool misuse for agents</li>
+            <li>A report mapped to the OWASP Top 10 for LLMs and MITRE ATLAS, and a readout</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel">
+        <form id="intake" novalidate>
+          <ol class="steps" aria-label="Progress">
+            <li data-step="1" class="current">1 · Partner</li>
+            <li data-step="2">2 · Customer</li>
+            <li data-step="3">3 · Identity</li>
+            <li data-step="4">4 · AI</li>
+            <li data-step="5">5 · Drivers</li>
+          </ol>
+
+          <!-- Step 1: Partner -->
+          <div class="step" data-step="1">
+            <h2>Your details</h2>
+            <div class="row">
+              <div class="field"><label for="f-porg">Partner organisation</label><input type="text" id="f-porg" name="porg" autocomplete="organization" required></div>
+              <div class="field"><label for="f-pcountry">Region / country</label>
+                <select id="f-pcountry" name="pcountry" required>
+                  <option value="">Select…</option>
+                  <option>India</option><option>Singapore</option><option>Australia</option><option>New Zealand</option>
+                  <option>Japan</option><option>Greater China</option><option>ASEAN (other)</option><option>Korea</option><option>Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="f-pname">Your name</label><input type="text" id="f-pname" name="pname" autocomplete="name" required></div>
+              <div class="field"><label for="f-ptitle">Your role <span class="hint">Optional</span></label><input type="text" id="f-ptitle" name="ptitle" placeholder="e.g. Security pre-sales engineer"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="f-pemail">Work email</label><input type="email" id="f-pemail" name="pemail" autocomplete="email" required></div>
+              <div class="field"><label for="f-pphone">Phone <span class="hint">Optional</span></label><input type="text" id="f-pphone" name="pphone" autocomplete="tel"></div>
+            </div>
+            <h3 style="margin-top:4px">Cisco Partner Account Manager</h3>
+            <div class="row">
+              <div class="field"><label for="f-pamname">Name</label><input type="text" id="f-pamname" name="pamname" required></div>
+              <div class="field"><label for="f-pamemail">Email</label><input type="email" id="f-pamemail" name="pamemail" required></div>
+            </div>
+          </div>
+
+          <!-- Step 2: Customer -->
+          <div class="step" data-step="2" hidden>
+            <h2>The customer</h2>
+            <div class="row">
+              <div class="field"><label for="f-company">Customer organisation</label><input type="text" id="f-company" name="company" required></div>
+              <div class="field"><label for="f-country">Country</label>
+                <select id="f-country" name="country" required>
+                  <option value="">Select…</option>
+                  <option>India</option><option>Singapore</option><option>Australia</option><option>New Zealand</option>
+                  <option>Other Asia Pacific or Japan</option><option>Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="f-industry">Industry</label>
+                <select id="f-industry" name="industry" required>
+                  <option value="">Select…</option>
+                  <option value="bfsi">Banking, financial services or insurance</option>
+                  <option value="gov">Government or public sector</option>
+                  <option value="health">Healthcare or life sciences</option>
+                  <option value="telco">Telecommunications</option>
+                  <option value="retail">Retail or consumer</option>
+                  <option value="tech">Technology or software</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="field"><label for="f-size">Company size</label>
+                <select id="f-size" name="size" required>
+                  <option value="">Select…</option>
+                  <option value="lt1k">Fewer than 1,000 employees</option>
+                  <option value="1to5k">1,000 to 5,000</option>
+                  <option value="gt5k">More than 5,000</option>
+                </select>
+              </div>
+            </div>
+            <h3 style="margin-top:4px">Customer contact</h3>
+            <div class="row">
+              <div class="field"><label for="f-name">Full name</label><input type="text" id="f-name" name="name" required></div>
+              <div class="field"><label for="f-email">Work email</label><input type="email" id="f-email" name="email" required></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="f-ctitle">Job title <span class="hint">Optional</span></label><input type="text" id="f-ctitle" name="ctitle"></div>
+              <div class="field"><label for="f-cphone">Phone <span class="hint">Optional</span></label><input type="text" id="f-cphone" name="cphone"></div>
+            </div>
+            <fieldset>
+              <legend>Contact's role</legend>
+              <div class="choices" id="g-role"></div>
+            </fieldset>
+          </div>
+
+          <!-- Step 3: Identity -->
+          <div class="step" data-step="3" hidden>
+            <h2>Identity visibility</h2>
+            <p class="subhead">Human identities</p>
+            <fieldset><legend>Which identity providers and directories do they use? <span class="hint">Select all that apply.</span></legend><div class="choices" id="g-idps"></div></fieldset>
+            <fieldset><legend>Roughly how many human identities (employees, contractors, partners)?</legend><div class="choices" id="g-humans"></div></fieldset>
+            <fieldset><legend>Can they see all identities, across every directory, in one place?</legend><div class="choices" id="g-singleView"></div></fieldset>
+            <fieldset><legend>How far does MFA reach?</legend><div class="choices wide" id="g-mfa"></div></fieldset>
+            <fieldset><legend>How often are dormant and privileged accounts reviewed?</legend><div class="choices" id="g-dormant"></div></fieldset>
+            <p class="subhead">Non-human identities</p>
+            <fieldset><legend>Do they have an inventory of service accounts, API keys, OAuth apps and tokens?</legend><div class="choices" id="g-nhiInv"></div></fieldset>
+            <fieldset><legend>How are those credentials rotated?</legend><div class="choices" id="g-nhiRot"></div></fieldset>
+            <p class="subhead">AI agent identities</p>
+            <fieldset><legend>Which AI agents are in use? <span class="hint">Select all that apply.</span></legend><div class="choices" id="g-agentsUse"></div></fieldset>
+            <fieldset id="fs-agentAuth"><legend>How do those agents authenticate to systems?</legend><div class="choices" id="g-agentAuth"></div></fieldset>
+            <fieldset id="fs-agentVis"><legend>Can they list every agent and what it can access?</legend><div class="choices" id="g-agentVis"></div></fieldset>
+            <p class="subhead">Assessment readiness</p>
+            <fieldset><legend>Can the identity team grant read-only API access to their identity providers?</legend><div class="choices" id="g-roAccess"></div></fieldset>
+            <fieldset><legend>Which endpoint detection and response (EDR) tool do they run?</legend><div class="choices" id="g-edr"></div></fieldset>
+            <fieldset><legend>Can assessment data be processed in a US-hosted cloud instance?</legend><div class="choices wide" id="g-residency"></div></fieldset>
+          </div>
+
+          <!-- Step 4: AI -->
+          <div class="step" data-step="4" hidden>
+            <h2>AI they build or run</h2>
+            <fieldset><legend>Is the customer building or running its own AI models, agents or applications?</legend><div class="choices wide" id="g-aiUse"></div></fieldset>
+            <div id="ai-detail" class="step" style="gap:18px">
+              <fieldset><legend>What do they want tested? <span class="hint">Select all that apply.</span></legend><div class="choices" id="g-scope"></div></fieldset>
+              <fieldset><legend>What model sits underneath?</legend><div class="choices wide" id="g-modelType"></div></fieldset>
+              <fieldset><legend>How many targets?</legend><div class="choices" id="g-count"></div></fieldset>
+              <fieldset><legend>Where are they today?</legend><div class="choices" id="g-stage"></div></fieldset>
+              <fieldset><legend>Can the test reach an endpoint? <span class="hint">A model API, agent API or app chat interface, plus credentials.</span></legend><div class="choices" id="g-endpoint"></div></fieldset>
+              <fieldset><legend>Has anyone adversarially tested them before?</legend><div class="choices" id="g-prior"></div></fieldset>
+            </div>
+            <p class="hint" id="ai-skip">No more AI questions needed. The AI Red Teaming Assessment needs a model, agent or app the customer builds or runs.</p>
+          </div>
+
+          <!-- Step 5: Drivers & authorisation -->
+          <div class="step" data-step="5" hidden>
+            <h2>Drivers and authorisation</h2>
+            <fieldset><legend>What's prompting this? <span class="hint">Select all that apply.</span></legend><div class="choices" id="g-drivers"></div></fieldset>
+            <fieldset><legend>Is there a date they need answers by?</legend><div class="choices" id="g-deadline"></div></fieldset>
+            <fieldset><legend>Is someone at the customer named to act on the findings?</legend><div class="choices" id="g-owner"></div></fieldset>
+            <label class="attest" for="f-attest"><input type="checkbox" id="f-attest" name="attest" required>
+              <span>The customer has confirmed they own or operate the systems in scope, and will give written authorisation before any read-only connection or testing starts. For third-party hosted models, they will check that the provider's terms allow testing.</span></label>
+            <label class="attest" for="f-consent"><input type="checkbox" id="f-consent" name="consent" required>
+              <span>The customer has agreed to share these details with Cisco and to be contacted about these assessments.</span></label>
+          </div>
+
+          <p class="error" id="err" role="alert"></p>
+          <div class="actions">
+            <button type="button" id="btn-back" hidden>Back</button>
+            <span></span>
+            <button type="submit" class="primary" id="btn-next">Continue</button>
+          </div>
+        </form>
+
+        <div class="result" id="result" hidden aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUALIFICATION VIEW -->
+  <section class="view partner" id="view-partner" aria-labelledby="p-title" hidden>
+    <div class="section-head">
+      <h1 id="p-title">Qualification</h1>
+      <p>Recommended assessments in order, scores and flags for the latest registration, a handoff note for your Cisco account manager, and a scoping call with go/no-go gate for each assessment.</p>
+    </div>
+
+    <div class="panel" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <strong id="p-who">—</strong>
+          <span class="hint" id="p-by"></span>
+        </div>
+        <span class="tag" id="p-example">Example registration. Submit the discovery form to replace it.</span>
+      </div>
+      <div class="reco" id="p-reco"></div>
+      <div class="tracks" id="p-tracks"></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <h3 style="margin-bottom:10px">Flags for the call</h3>
+        <ul class="flags" id="p-flags"></ul>
+      </div>
+      <div class="panel" style="display:flex;flex-direction:column;gap:12px">
+        <h3><label for="p-note">Handoff note</label></h3>
+        <textarea class="note" id="p-note" readonly></textarea>
+        <div class="copyrow"><button type="button" id="btn-copy">Copy note</button><span id="copy-msg" aria-live="polite"></span></div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <h3>Partner</h3>
+        <dl class="answers" id="p-partner"></dl>
+        <h3 style="margin-top:8px">Customer</h3>
+        <dl class="answers" id="p-customer"></dl>
+      </div>
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <h3><span class="chip isa">ISA</span><span class="chip ava">AVA</span>Identity answers</h3>
+        <dl class="answers" id="p-identity"></dl>
+        <h3 style="margin-top:8px"><span class="chip rt">RT</span>AI answers</h3>
+        <dl class="answers" id="p-ai"></dl>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="panel" style="display:flex;flex-direction:column;gap:18px">
+        <div class="section-head" style="margin:0"><h2><span class="chip isa">ISA</span>Scoping call · 15 min</h2><p>With the identity or IAM owner. Whoever approves read-only access must be on the call or reachable.</p></div>
+        <ol class="agenda">
+          <li><span class="mono">0–3</span><span><strong>Identity sources.</strong> Every identity provider and directory, with tenants, and which hold privileged accounts.</span></li>
+          <li><span class="mono">3–7</span><span><strong>Access.</strong> Read-only API access approved by each identity provider's admin. Nothing is deployed.</span></li>
+          <li><span class="mono">7–10</span><span><strong>Non-human and agent sources.</strong> Which to connect. Set expectations: agent and NHI visibility is basic compared with AVA.</span></li>
+          <li><span class="mono">10–12</span><span><strong>Timeline.</strong> Data can take up to 14 days to stabilise on the sovereign instance. Agree the report date.</span></li>
+          <li><span class="mono">12–15</span><span><strong>Readout.</strong> Book it with the CISO or identity owner and your Cisco PAM.</span></li>
+        </ol>
+        <div>
+          <div class="gatehead"><h3>Go / no-go</h3><span class="pill nogo" id="gate-isa-pill">Not ready · 0 of 5</span></div>
+          <div class="checks" id="gate-isa" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:18px">
+        <div class="section-head" style="margin:0"><h2><span class="chip ava">AVA</span>Scoping call · 15 min</h2><p>With the EDR owner and whoever owns the agent rollout.</p></div>
+        <ol class="agenda">
+          <li><span class="mono">0–3</span><span><strong>Agents in scope.</strong> Platforms, business units and devices where agents run.</span></li>
+          <li><span class="mono">3–7</span><span><strong>EDR integration.</strong> CrowdStrike Falcon or Microsoft Defender API access, approved by the EDR admin.</span></li>
+          <li><span class="mono">7–10</span><span><strong>Data residency.</strong> Written approval for processing on the US-hosted Cisco Identity Intelligence instance.</span></li>
+          <li><span class="mono">10–12</span><span><strong>Window.</strong> Agree the one-week assessment dates.</span></li>
+          <li><span class="mono">12–15</span><span><strong>Readout.</strong> Book the PDF readout with the security leader, the agent owner and your Cisco PAM.</span></li>
+        </ol>
+        <div>
+          <div class="gatehead"><h3>Go / no-go</h3><span class="pill nogo" id="gate-ava-pill">Not ready · 0 of 5</span></div>
+          <div class="checks" id="gate-ava" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="display:flex;flex-direction:column;gap:18px">
+        <div class="section-head" style="margin:0"><h2><span class="chip rt">RT</span>Scoping call · 20 min</h2><p>With the model, agent or app owner. Bring the security lead if you can.</p></div>
+        <ol class="agenda">
+          <li><span class="mono">0–3</span><span><strong>Targets.</strong> Models, agents or apps, with versions and hosting. For agents, which tools and data they can reach.</span></li>
+          <li><span class="mono">3–8</span><span><strong>Access.</strong> Endpoint URL, auth method, rate limits, token budget, staging or production.</span></li>
+          <li><span class="mono">8–12</span><span><strong>Rules of engagement.</strong> Written authorisation, testing window, provider terms, who is told. No test may trigger real transactions.</span></li>
+          <li><span class="mono">12–17</span><span><strong>Objectives.</strong> Standard categories plus 1–3 custom objectives from the use case.</span></li>
+          <li><span class="mono">17–20</span><span><strong>Readout.</strong> Book it with the security leader, the target owner and your Cisco PAM.</span></li>
+        </ol>
+        <div>
+          <div class="gatehead"><h3>Go / no-go</h3><span class="pill nogo" id="gate-rt-pill">Not ready · 0 of 5</span></div>
+          <div class="checks" id="gate-rt" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-head"><h2>ISA or AVA?</h2><p>Both run on Cisco Identity Intelligence. They differ in what they see, where the data lives and how long they take.</p></div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th></th><th><span class="chip isa">ISA</span>Identity Security Assessment</th><th><span class="chip ava">AVA</span>Agent Visibility Assessment</th></tr></thead>
+          <tbody>
+            <tr><td>Identities covered</td><td>Human, non-human and AI agents</td><td>AI agents only</td></tr>
+            <tr><td>Agent and NHI depth</td><td>Basic</td><td>Deep (agents)</td></tr>
+            <tr><td>Instance</td><td>Sovereign Cisco Identity Intelligence instance</td><td>US-hosted Cisco Identity Intelligence instance</td></tr>
+            <tr><td>Connects to</td><td>Identity providers, read-only APIs</td><td>CrowdStrike Falcon or Microsoft Defender</td></tr>
+            <tr><td>Duration</td><td>Up to 14 days for data to stabilise</td><td>One week</td></tr>
+            <tr><td>Output</td><td>Findings report and readout</td><td>PDF readout</td></tr>
+            <tr><td>Pick when</td><td>Human identity gaps matter, or data must stay in-region</td><td>Agents are the main concern, the EDR fits and US hosting is acceptable</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-head"><h2>How the recommendation works</h2>
+        <p>Each assessment gets its own score out of 100 after an entry check. ISA needs a supported identity provider and read-only access. AVA needs AI agents in use, CrowdStrike Falcon or Microsoft Defender, and acceptance of US hosting. RT needs AI the customer builds or runs, with a reachable endpoint. Then 70 or more is fast-track, 40–69 goes to Cisco review, and under 40 is nurture. A personal email address for the customer contact caps every track at review.</p>
+        <p>When both identity assessments qualify, AVA is recommended on its own unless there are at least two human or non-human identity gaps, in which case both run. When agents are in use without clear visibility of their identities, the identity assessment goes before RT, so the agents are found before they're tested.</p></div>
+      <div class="config" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr);margin-bottom:16px">
+        <div class="field"><label for="c-isa-link">Identity self-serve link <span class="hint">Saved in this browser only.</span></label><input type="text" id="c-isa-link"></div>
+        <div class="field"><label for="c-rt-link">AI red teaming self-serve link <span class="hint">Saved in this browser only.</span></label><input type="text" id="c-rt-link"></div>
+      </div>
+      <div class="grid3">
+        <div class="tablewrap"><h3 style="margin-bottom:8px"><span class="chip isa">ISA</span>Rubric</h3><table><thead><tr><th>Area</th><th>Question</th><th>Max</th></tr></thead><tbody id="rubric-isa"></tbody></table></div>
+        <div class="tablewrap"><h3 style="margin-bottom:8px"><span class="chip ava">AVA</span>Rubric</h3><table><thead><tr><th>Area</th><th>Question</th><th>Max</th></tr></thead><tbody id="rubric-ava"></tbody></table></div>
+        <div class="tablewrap"><h3 style="margin-bottom:8px"><span class="chip rt">RT</span>Rubric</h3><table><thead><tr><th>Area</th><th>Question</th><th>Max</th></tr></thead><tbody id="rubric-rt"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Questions ----------
+  var Q = {
+    role: { label: "Contact's role", options: [
+      ["ciso", "CISO or security leadership"], ["iam", "Identity or IAM lead"], ["risk", "Risk, compliance or audit"],
+      ["ai", "AI, ML or data science"], ["app", "Application or product owner"], ["seceng", "Security engineer or architect"], ["other", "Other"]] },
+    idps: { multi: true, label: "Identity providers", options: [
+      ["entra", "Microsoft Entra ID"], ["ad", "Active Directory (on-premises)"], ["okta", "Okta"], ["ping", "Ping Identity"],
+      ["google", "Google Workspace"], ["duo", "Cisco Duo"], ["other", "Other or not sure"]] },
+    humans: { label: "Human identities", options: [["lt1k", "Fewer than 1,000"], ["1to5k", "1,000 to 5,000"], ["5to20k", "5,000 to 20,000"], ["gt20k", "More than 20,000"]] },
+    singleView: { label: "Single view of identities", options: [["yes", "Yes, one consolidated view"], ["partial", "Partly, directory by directory"], ["no", "No"]] },
+    mfa: { label: "MFA reach", options: [
+      ["phish", "All users, phishing-resistant (FIDO2, passkeys)"], ["all", "All users, mixed methods (push, SMS, one-time codes)"],
+      ["partial", "Some users or apps only"], ["unknown", "Don't know"]] },
+    dormant: { label: "Dormant and privileged account reviews", options: [["cont", "Continuously or monthly"], ["quarterly", "Quarterly"], ["annual", "Annually or ad hoc"], ["never", "Never or don't know"]] },
+    nhiInv: { label: "Non-human identity inventory", options: [["full", "Full inventory with owners"], ["partial", "Partial"], ["none", "None"], ["unknown", "Don't know"]] },
+    nhiRot: { label: "Credential rotation", options: [["auto", "Automated rotation and expiry"], ["manual", "Manual rotation"], ["none", "Long-lived, rarely rotated"], ["unknown", "Don't know"]] },
+    agentsUse: { multi: true, label: "AI agents in use", options: [
+      ["copilot", "Microsoft Copilot Studio or Entra Agent ID"], ["openai", "OpenAI (ChatGPT Enterprise, Agents SDK)"],
+      ["saas", "Agents inside SaaS (Salesforce, ServiceNow…)"], ["custom", "Custom-built agents (LangChain, CrewAI…)"],
+      ["mcp", "MCP servers"], ["none", "None yet"]] },
+    agentAuth: { label: "Agent authentication", options: [
+      ["dedicated", "Dedicated agent identities"], ["shared", "Shared service accounts or API keys"],
+      ["delegated", "Users' own delegated credentials"], ["unknown", "Don't know"]] },
+    agentVis: { label: "Agent inventory and access", options: [["yes", "Yes"], ["partly", "Partly"], ["no", "No"]] },
+    roAccess: { label: "Read-only identity access", options: [["yes", "Yes"], ["approval", "Needs approval, possible within 2 weeks"], ["no", "No"]] },
+    edr: { label: "EDR", options: [
+      ["crowdstrike", "CrowdStrike Falcon"], ["defender", "Microsoft Defender for Endpoint"], ["cisco", "Cisco Secure Endpoint"],
+      ["s1", "SentinelOne"], ["other", "Other or none"]] },
+    residency: { label: "US-hosted processing", options: [
+      ["us", "Yes, a US-hosted instance is fine"], ["approval", "Needs approval"],
+      ["sovereign", "No, data must stay in-country or in-region"], ["unsure", "Not sure"]] },
+    aiUse: { label: "Builds or runs own AI", options: [
+      ["builds", "Yes, its own models, agents or applications"], ["saasonly", "Only uses SaaS AI tools (Copilot, ChatGPT and similar)"], ["none", "Not yet"]] },
+    scope: { multi: true, label: "Scope", options: [["models", "AI models"], ["agents", "AI agents"], ["apps", "AI applications (chatbots, copilots, RAG apps)"]] },
+    modelType: { label: "Underlying model", options: [
+      ["hosted", "Hosted API model (Azure OpenAI, Bedrock, Vertex AI, OpenAI, Anthropic…)"],
+      ["selfhosted", "Open-weight model they host (Llama, Mistral, Qwen…)"], ["finetuned", "Fine-tuned or custom-trained model"], ["unsure", "Not sure yet"]] },
+    count: { label: "Number of targets", options: [["one", "1"], ["few", "2–3"], ["many", "4 or more"]] },
+    stage: { label: "Stage", options: [["prod", "In production"], ["launch", "Launching within 3 months"], ["pilot", "Pilot or proof of concept"], ["explore", "Exploring"]] },
+    endpoint: { label: "Reachable endpoint", options: [["staging", "Yes, a staging or dev endpoint"], ["prod", "Yes, production only"], ["soon", "Can arrange within 2 weeks"], ["no", "No"]] },
+    prior: { label: "Prior adversarial testing", options: [["none", "No"], ["adhoc", "Informal internal testing"], ["old", "External test over 6 months ago"], ["recent", "External test in the last 6 months"]] },
+    drivers: { multi: true, label: "Drivers", options: [
+      ["idincident", "Identity incident or account takeover"], ["audit", "Access or privileged-account audit"],
+      ["idp", "Identity platform migration or consolidation"], ["agentrollout", "AI agent rollout"],
+      ["ailaunch", "AI app or model launch"], ["modelchange", "Model change or fine-tune"],
+      ["regulator", "Regulator requirement"], ["board", "Board or leadership asked"],
+      ["vendor", "Choosing between models"], ["curious", "General interest"]] },
+    deadline: { label: "Deadline", options: [["d30", "Within 30 days"], ["m3", "1–3 months"], ["m6", "3–6 months"], ["none", "No date"]] },
+    owner: { label: "Owner for findings", options: [["yes", "Yes, a named person"], ["unsure", "Not sure"], ["no", "No"]] },
+    industry: { label: "Industry", options: [
+      ["bfsi", "Banking, financial services or insurance"], ["gov", "Government or public sector"], ["health", "Healthcare or life sciences"],
+      ["telco", "Telecommunications"], ["retail", "Retail or consumer"], ["tech", "Technology or software"], ["other", "Other"]] },
+    size: { label: "Company size", options: [["lt1k", "Fewer than 1,000 employees"], ["1to5k", "1,000 to 5,000"], ["gt5k", "More than 5,000"]] }
+  };
+
+  // ---------- Points ----------
+  var P = {
+    isa: {
+      roAccess: { yes: 15, approval: 10, no: 0 },
+      singleView: { no: 8, partial: 5, yes: 1 },
+      mfa: { unknown: 7, partial: 7, all: 4, phish: 1 },
+      dormant: { never: 7, annual: 5, quarterly: 2, cont: 0 },
+      nhiInv: { none: 7, unknown: 7, partial: 5, full: 1 },
+      agentVis: { no: 6, partly: 4, yes: 1 },
+      nhiRot: { none: 6, unknown: 6, manual: 3, auto: 1 },
+      drivers: { idincident: 10, audit: 10, idp: 8, agentrollout: 8, regulator: 8, board: 6 },
+      deadline: { d30: 10, m3: 8, m6: 4, none: 0 },
+      humans: { gt20k: 15, "5to20k": 12, "1to5k": 9, lt1k: 5 }
+    },
+    ava: {
+      edr: { crowdstrike: 20, defender: 20 },
+      residency: { us: 15, approval: 8, unsure: 8, sovereign: 0 },
+      agentVis: { no: 12, partly: 8, yes: 2 },
+      agentAuth: { delegated: 12, unknown: 12, shared: 10, dedicated: 2 },
+      drivers: { agentrollout: 10, idincident: 8, regulator: 8, board: 6, audit: 6 },
+      deadline: { d30: 10, m3: 8, m6: 4, none: 0 },
+      size: { gt5k: 10, "1to5k": 7, lt1k: 4 }
+    },
+    rt: {
+      modelType: { hosted: 8, selfhosted: 10, finetuned: 10, unsure: 2 },
+      count: { one: 4, few: 5, many: 5 },
+      endpoint: { staging: 15, prod: 10, soon: 7, no: 0 },
+      stage: { prod: 8, launch: 10, pilot: 5, explore: 0 },
+      deadline: { d30: 10, m3: 8, m6: 4, none: 0 },
+      drivers: { agentrollout: 5, ailaunch: 5, modelchange: 5, regulator: 5, board: 5, vendor: 3 },
+      role: { ciso: 10, risk: 8, ai: 7, iam: 6, app: 6, seceng: 6, other: 2 },
+      owner: { yes: 10, unsure: 4, no: 0 },
+      prior: { none: 5, adhoc: 4, old: 3, recent: 1 },
+      industry: { bfsi: 10, gov: 9, health: 8, telco: 8, retail: 6, tech: 6, other: 5 },
+      size: { gt5k: 10, "1to5k": 7, lt1k: 4 }
+    }
+  };
+  function p(track, key, val) { var t = P[track][key]; return t && t[val] != null ? t[val] : 0; }
+  function pmax(track, key, vals) { var m = 0; (vals || []).forEach(function (v) { m = Math.max(m, p(track, key, v)); }); return m; }
+
+  var AREAS = {
+    isa: [["ready", "Readiness", 30], ["gap", "Visibility gap", 35], ["trigger", "Trigger", 20], ["fit", "Identity scale", 15]],
+    ava: [["ready", "Readiness", 35], ["gap", "Agent visibility gap", 35], ["trigger", "Trigger", 20], ["fit", "Fit", 10]],
+    rt: [["target", "Target readiness", 30], ["trigger", "Trigger", 25], ["authority", "Authority to act", 25], ["fit", "Fit", 20]]
+  };
+  var TRACKS = ["isa", "ava", "rt"];
+  var PERSONAL = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "live.com", "icloud.com", "proton.me", "protonmail.com", "rediffmail.com"];
+
+  function label(key, val) {
+    var o = Q[key].options;
+    for (var i = 0; i < o.length; i++) if (o[i][0] === val) return o[i][1];
+    return "—";
+  }
+  function labels(key, vals) { return (vals || []).map(function (x) { return label(key, x); }).join(", ") || "—"; }
+  function has(arr, x) { return (arr || []).indexOf(x) !== -1; }
+  function agentList(a) { return (a.agentsUse || []).filter(function (x) { return x !== "none"; }); }
+  function agentsInUse(a) { return agentList(a).length > 0; }
+  function edrFits(a) { return a.edr === "crowdstrike" || a.edr === "defender"; }
+  function sum(o) { return Object.keys(o).reduce(function (t, k) { return t + o[k]; }, 0); }
+
+  function routeFor(total, eligible, personal) {
+    if (!eligible) return "notready";
+    var r = total >= 70 ? "fast" : total >= 40 ? "review" : "nurture";
+    if (personal && r === "fast") r = "review";
+    return r;
+  }
+  function qualifies(route) { return route === "fast" || route === "review"; }
+
+  function score(a) {
+    var domain = String(a.email || "").split("@")[1] || "";
+    var personal = PERSONAL.indexOf(domain.toLowerCase()) !== -1;
+    var agents = agentsInUse(a), nAgents = agentList(a).length;
+    var supported = (a.idps || []).some(function (x) { return x !== "other"; });
+    var builds = a.aiUse === "builds";
+    var agentGap = agents && (a.agentVis !== "yes" || a.agentAuth !== "dedicated");
+    var humanGaps = [a.singleView !== "yes", a.mfa === "partial" || a.mfa === "unknown", a.dormant === "never" || a.dormant === "annual", a.nhiInv === "none" || a.nhiInv === "unknown"].filter(Boolean).length;
+
+    // ISA
+    var isa = {
+      ready: (supported ? 15 : 0) + p("isa", "roAccess", a.roAccess),
+      gap: p("isa", "singleView", a.singleView) + p("isa", "mfa", a.mfa) + p("isa", "dormant", a.dormant) + p("isa", "nhiInv", a.nhiInv) +
+        (agents ? p("isa", "agentVis", a.agentVis) : p("isa", "nhiRot", a.nhiRot)),
+      trigger: pmax("isa", "drivers", a.drivers) + p("isa", "deadline", a.deadline),
+      fit: p("isa", "humans", a.humans)
+    };
+    var isaEligible = supported && a.roAccess !== "no";
+
+    // AVA
+    var ava = { ready: 0, gap: 0, trigger: 0, fit: 0 };
+    if (agents) {
+      ava.ready = p("ava", "edr", a.edr) + p("ava", "residency", a.residency);
+      ava.gap = p("ava", "agentVis", a.agentVis) + p("ava", "agentAuth", a.agentAuth) + (nAgents >= 3 ? 11 : nAgents === 2 ? 8 : 5);
+      ava.trigger = pmax("ava", "drivers", a.drivers) + p("ava", "deadline", a.deadline);
+      ava.fit = p("ava", "size", a.size);
+    }
+    var avaEligible = agents && edrFits(a) && a.residency !== "sovereign";
+
+    // RT
+    var rt = { target: 0, trigger: 0, authority: 0, fit: 0 };
+    if (builds) {
+      rt.target = p("rt", "modelType", a.modelType) + p("rt", "count", a.count) + p("rt", "endpoint", a.endpoint);
+      rt.trigger = p("rt", "stage", a.stage) + p("rt", "deadline", a.deadline) + pmax("rt", "drivers", a.drivers);
+      rt.authority = p("rt", "role", a.role) + p("rt", "owner", a.owner) + p("rt", "prior", a.prior);
+      rt.fit = p("rt", "industry", a.industry) + p("rt", "size", a.size);
+    }
+    var rtEligible = builds && a.endpoint !== "no";
+
+    var T = {
+      isa: { areas: isa, total: sum(isa), eligible: isaEligible },
+      ava: { areas: ava, total: sum(ava), eligible: avaEligible },
+      rt: { areas: rt, total: sum(rt), eligible: rtEligible }
+    };
+    TRACKS.forEach(function (k) { T[k].route = routeFor(T[k].total, T[k].eligible, personal); T[k].q = qualifies(T[k].route); });
+
+    // Reasons per track
+    var edrName = label("edr", a.edr);
+    T.isa.why = [];
+    if (!supported) T.isa.why.push("No supported identity provider identified yet");
+    if (a.roAccess === "no") T.isa.why.push("Read-only access to identity providers isn't possible");
+    if (a.singleView !== "yes") T.isa.why.push("No single view of identities across directories");
+    if (a.mfa === "partial" || a.mfa === "unknown") T.isa.why.push("MFA coverage is partial or unknown");
+    if (a.dormant === "never" || a.dormant === "annual") T.isa.why.push("Dormant and privileged accounts are rarely reviewed");
+    if (a.nhiInv === "none" || a.nhiInv === "unknown") T.isa.why.push("No inventory of non-human identities");
+    if (a.residency === "sovereign") T.isa.why.push("Data must stay in-region, which the sovereign instance allows");
+
+    T.ava.why = [];
+    if (!agents) T.ava.why.push("No AI agents in use yet");
+    else {
+      if (!edrFits(a)) T.ava.why.push("Needs CrowdStrike Falcon or Microsoft Defender. The customer runs " + edrName);
+      if (a.residency === "sovereign") T.ava.why.push("Data must stay in-region, but AVA runs on a US-hosted instance");
+      if (a.agentVis !== "yes") T.ava.why.push("Can't fully list agents and what they can access");
+      if (a.agentAuth === "shared" || a.agentAuth === "delegated" || a.agentAuth === "unknown")
+        T.ava.why.push("Agents authenticate with " + (a.agentAuth === "unknown" ? "unknown credentials" : a.agentAuth === "shared" ? "shared service accounts or keys" : "users' own credentials"));
+      if (nAgents >= 2) T.ava.why.push("Agents on " + nAgents + " different platforms");
+    }
+
+    T.rt.why = [];
+    if (!builds) T.rt.why.push(a.aiUse === "saasonly" ? "Only uses SaaS AI tools, so there's nothing of theirs to test" : "Not building or running AI yet");
+    else {
+      if (a.endpoint === "no") T.rt.why.push("No endpoint the test can reach");
+      if (a.stage === "launch") T.rt.why.push("Launching within 3 months");
+      if (a.stage === "prod") T.rt.why.push("Already in production");
+      if (a.prior === "none" || a.prior === "adhoc") T.rt.why.push("No external adversarial testing so far");
+      if (has(a.scope, "agents")) T.rt.why.push("Agents in scope, so tool misuse can be tested");
+      if (a.modelType === "finetuned") T.rt.why.push("Fine-tuned model, where safety alignment can weaken");
+    }
+
+    // Identity pick
+    var idPicks = [], idWhy = "";
+    if (T.isa.q && T.ava.q) {
+      if (humanGaps >= 2) {
+        idPicks = T.ava.total >= T.isa.total ? ["ava", "isa"] : ["isa", "ava"];
+        idWhy = "Run AVA for deep agent visibility through " + edrName + " (one week), and ISA for the human and non-human identity gaps. They can run in parallel.";
+      } else {
+        idPicks = ["ava"];
+        idWhy = "Agents are the main identity gap and " + edrName + " is in place, so AVA gives deep agent visibility in one week. Human identity hygiene looks reasonable, so ISA can wait.";
+      }
+    } else if (T.ava.q) {
+      idPicks = ["ava"];
+      idWhy = "AVA gives deep agent visibility through " + edrName + " in one week." + (T.isa.eligible ? "" : " ISA isn't possible yet.");
+    } else if (T.isa.q) {
+      idPicks = ["isa"];
+      idWhy = "ISA covers human, non-human and agent identities on the sovereign instance.";
+      if (agents && !T.ava.eligible) idWhy += " Agent visibility will be basic, because AVA isn't possible: " + (a.residency === "sovereign" ? "data must stay in-region." : "it needs CrowdStrike Falcon or Microsoft Defender.");
+    }
+
+    // Overall order: identity first when agents lack visible identities, otherwise by score
+    var picks = idPicks.slice();
+    if (T.rt.q) {
+      var idBest = idPicks.reduce(function (m, k) { return Math.max(m, T[k].total); }, -1);
+      if (!idPicks.length) picks = ["rt"];
+      else if (!agentGap && T.rt.total > idBest) picks = ["rt"].concat(idPicks);
+      else picks = idPicks.concat(["rt"]);
+    }
+
+    var why = [];
+    if (idWhy) why.push(idWhy);
+    if (T.rt.q) why.push(agentGap && idPicks.length && picks[0] !== "rt" ? "Then red team the agents and AI apps once their identities are visible." : "The AI Red Teaming Assessment fits as well.");
+    if (!picks.length) why.push("None of the three assessments is ready. Use the nurture steps and revisit in 30 days.");
+
+    // Flags: [class, tags[], text]
+    var flags = [];
+    if (personal) flags.push(["crit", [], "Customer contact has a personal email address. Verify the organisation before scheduling."]);
+    if (a.owner === "no") flags.push(["crit", [], "No owner for findings. Name one on the call or don't run any assessment."]);
+    if (agents && a.agentAuth === "delegated") flags.push(["crit", ["ava", "isa"], "Agents act with users' own credentials, so agent actions can't be told apart from human ones. Make this a headline in the readout."]);
+    if (agents && a.residency === "sovereign") flags.push(["", ["isa"], "Data must stay in-region, so AVA (US-hosted) is out. ISA covers agents, but its agent and NHI visibility is basic. Set expectations."]);
+    if (agents && !edrFits(a)) flags.push(["", ["ava"], "AVA needs CrowdStrike Falcon or Microsoft Defender. The customer runs " + edrName + "."]);
+    if (T.ava.eligible && (a.residency === "approval" || a.residency === "unsure")) flags.push(["", ["ava"], "AVA runs on a US-hosted instance. Get written approval for US processing before starting."]);
+    if (has(picks, "isa") && agents && !has(picks, "ava") && a.residency !== "sovereign") flags.push(["", ["isa"], "ISA's agent and NHI visibility is basic compared with AVA. Revisit AVA if agents become the main concern."]);
+    if (a.roAccess === "approval") flags.push(["", ["isa"], "Read-only access needs approval. Find out who approves it and get them on the scoping call."]);
+    if (has(a.idps, "ad") && !has(a.idps, "entra")) flags.push(["", ["isa"], "On-premises Active Directory only. Confirm how it connects before promising coverage."]);
+    if (has(a.idps, "other")) flags.push(["", ["isa"], "Unlisted or unknown identity provider. Check it against the supported integrations."]);
+    if (agents && a.agentAuth === "shared") flags.push(["", ["ava", "isa"], "Agents share service accounts or keys. Ask who owns those credentials and when they were last rotated."]);
+    if (has(a.agentsUse, "mcp")) flags.push(["", ["ava", "rt"], "MCP servers in use. Ask which tools they expose and how they authenticate."]);
+    if (builds) {
+      if (a.endpoint === "prod") flags.push(["", ["rt"], "Production-only endpoint. Agree a testing window and rate limits, and tell the SOC."]);
+      if (a.modelType === "hosted") flags.push(["", ["rt"], "Hosted API model. Check the provider's terms allow adversarial testing. Token costs land on the customer."]);
+      if (has(a.scope, "agents")) flags.push(["", ["rt"], "Agents in scope. List each agent's tools and data, and confirm tests can't trigger real actions."]);
+      if (a.prior === "recent") flags.push(["", ["rt"], "Tested recently. Position this as a re-test after changes."]);
+    }
+    if (has(a.drivers, "regulator")) flags.push(["", [], "Regulatory driver. Ask which framework and what evidence the auditor expects."]);
+
+    return { personal: personal, T: T, picks: picks, why: why.join(" "), flags: flags };
+  }
+
+  // ---------- Config ----------
+  var cfg = {
+    isaLink: "https://www.cisco.com/site/us/en/solutions/security/identity-intelligence/index.html",
+    rtLink: "https://www.cisco.com/site/us/en/products/security/ai-defense/index.html"
+  };
+  try { var saved = JSON.parse(localStorage.getItem("idai-intake-cfg") || "null"); if (saved) cfg = Object.assign(cfg, saved); } catch (e) {}
+  function saveCfg() { try { localStorage.setItem("idai-intake-cfg", JSON.stringify(cfg)); } catch (e) {} }
+
+  // ---------- Build choice groups ----------
+  function buildGroup(key) {
+    var host = document.getElementById("g-" + key);
+    var multi = !!Q[key].multi;
+    Q[key].options.forEach(function (o) {
+      var id = "f-" + key + "-" + o[0];
+      var lab = document.createElement("label");
+      lab.className = "choice"; lab.setAttribute("for", id);
+      var inp = document.createElement("input");
+      inp.type = multi ? "checkbox" : "radio"; inp.name = key; inp.value = o[0]; inp.id = id;
+      var sp = document.createElement("span"); sp.textContent = o[1];
+      lab.appendChild(inp); lab.appendChild(sp); host.appendChild(lab);
+    });
+  }
+  ["role", "idps", "humans", "singleView", "mfa", "dormant", "nhiInv", "nhiRot", "agentsUse", "agentAuth", "agentVis", "roAccess", "edr", "residency",
+   "aiUse", "scope", "modelType", "count", "stage", "endpoint", "prior", "drivers", "deadline", "owner"].forEach(buildGroup);
+
+  // ---------- Stepper ----------
+  var LAST = 5;
+  var form = document.getElementById("intake");
+  var F = form.elements;
+  var step = 1;
+  var errEl = document.getElementById("err");
+  var back = document.getElementById("btn-back");
+  var next = document.getElementById("btn-next");
+
+  function v(name) { return String(F[name].value || "").trim(); }
+  function radioVal(name) { var el = form.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ""; }
+  function multiVal(name) { return Array.prototype.map.call(form.querySelectorAll('input[name="' + name + '"]:checked'), function (e) { return e.value; }); }
+
+  document.getElementById("g-agentsUse").addEventListener("change", function (e) {
+    var t = e.target;
+    if (t.checked) form.querySelectorAll('input[name="agentsUse"]').forEach(function (x) {
+      if (t.value === "none" ? x.value !== "none" : x.value === "none") x.checked = false;
+    });
+    syncConditional();
+  });
+  document.getElementById("g-aiUse").addEventListener("change", syncConditional);
+  function syncConditional() {
+    var agents = agentsInUse({ agentsUse: multiVal("agentsUse") });
+    document.getElementById("fs-agentAuth").hidden = !agents;
+    document.getElementById("fs-agentVis").hidden = !agents;
+    var builds = radioVal("aiUse") === "builds";
+    document.getElementById("ai-detail").hidden = !builds;
+    document.getElementById("ai-skip").hidden = builds || !radioVal("aiUse");
+  }
+
+  function collect() {
+    var agents = agentsInUse({ agentsUse: multiVal("agentsUse") });
+    var builds = radioVal("aiUse") === "builds";
+    return {
+      partner: { org: v("porg"), country: v("pcountry"), name: v("pname"), title: v("ptitle"), email: v("pemail"), phone: v("pphone"), pamName: v("pamname"), pamEmail: v("pamemail") },
+      company: v("company"), country: v("country"), industry: v("industry"), size: v("size"),
+      name: v("name"), email: v("email"), ctitle: v("ctitle"), cphone: v("cphone"), role: radioVal("role"),
+      idps: multiVal("idps"), humans: radioVal("humans"), singleView: radioVal("singleView"), mfa: radioVal("mfa"), dormant: radioVal("dormant"),
+      nhiInv: radioVal("nhiInv"), nhiRot: radioVal("nhiRot"), agentsUse: multiVal("agentsUse"),
+      agentAuth: agents ? radioVal("agentAuth") : "", agentVis: agents ? radioVal("agentVis") : "", roAccess: radioVal("roAccess"),
+      edr: radioVal("edr"), residency: radioVal("residency"),
+      aiUse: radioVal("aiUse"),
+      scope: builds ? multiVal("scope") : [], modelType: builds ? radioVal("modelType") : "", count: builds ? radioVal("count") : "",
+      stage: builds ? radioVal("stage") : "", endpoint: builds ? radioVal("endpoint") : "", prior: builds ? radioVal("prior") : "",
+      drivers: multiVal("drivers"), deadline: radioVal("deadline"), owner: radioVal("owner"),
+      attest: F["attest"].checked, consent: F["consent"].checked
+    };
+  }
+
+  var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  function validate(n) {
+    var a = collect(), pt = a.partner;
+    if (n === 1) {
+      if (!pt.org || !pt.country) return "Enter your organisation and region or country.";
+      if (!pt.name) return "Enter your name.";
+      if (!EMAIL.test(pt.email)) return "Enter a valid work email address for yourself.";
+      if (!pt.pamName || !EMAIL.test(pt.pamEmail)) return "Enter your Cisco Partner Account Manager's name and a valid email address.";
+    }
+    if (n === 2) {
+      if (!a.company || !a.country) return "Enter the customer's organisation and country.";
+      if (!a.industry || !a.size) return "Choose the customer's industry and company size.";
+      if (!a.name) return "Enter the customer contact's name.";
+      if (!EMAIL.test(a.email)) return "Enter a valid work email address for the customer contact.";
+      if (!a.role) return "Choose the customer contact's role.";
+    }
+    if (n === 3) {
+      if (!a.idps.length) return "Choose at least one identity provider, or \"Other or not sure\".";
+      if (!a.humans || !a.singleView || !a.mfa || !a.dormant) return "Answer each human identity question.";
+      if (!a.nhiInv || !a.nhiRot) return "Answer both non-human identity questions.";
+      if (!a.agentsUse.length) return "Choose which AI agents are in use, or \"None yet\".";
+      if (agentsInUse(a) && (!a.agentAuth || !a.agentVis)) return "Answer how agents authenticate and whether they can be listed.";
+      if (!a.roAccess || !a.edr || !a.residency) return "Answer the three assessment readiness questions.";
+    }
+    if (n === 4) {
+      if (!a.aiUse) return "Answer whether the customer builds or runs its own AI.";
+      if (a.aiUse === "builds") {
+        if (!a.scope.length) return "Choose at least one thing to test.";
+        if (!a.modelType || !a.count || !a.stage || !a.endpoint || !a.prior) return "Answer each AI question to continue.";
+      }
+    }
+    if (n === 5) {
+      if (!a.drivers.length) return "Choose at least one reason.";
+      if (!a.deadline || !a.owner) return "Answer the deadline and findings-owner questions.";
+      if (!a.attest) return "Confirm the authorisation statement.";
+      if (!a.consent) return "Confirm the customer has agreed to share these details and be contacted.";
+    }
+    return "";
+  }
+
+  function show(n) {
+    step = n;
+    form.querySelectorAll(".step[data-step]").forEach(function (s) { s.hidden = Number(s.dataset.step) !== n; });
+    form.querySelectorAll(".steps li").forEach(function (li) {
+      var k = Number(li.dataset.step);
+      li.className = k < n ? "done" : k === n ? "current" : "";
+      if (k === n) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current");
+    });
+    back.hidden = n === 1;
+    next.textContent = n === LAST ? "See recommendation" : "Continue";
+    errEl.textContent = "";
+    syncConditional();
+  }
+
+  back.addEventListener("click", function () { show(step - 1); });
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var msg = validate(step);
+    if (msg) { errEl.textContent = msg; return; }
+    if (step < LAST) { show(step + 1); window.scrollTo(0, 0); return; }
+    var a = collect();
+    latest = { answers: a, result: score(a), example: false };
+    renderResult();
+    renderPartner();
+    window.scrollTo(0, 0);
+  });
+
+  // ---------- Shared rendering ----------
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  var ROUTE_TEXT = { fast: "Fast-track", review: "Cisco review", nurture: "Nurture", notready: "Not ready" };
+  var NAME = { isa: "Identity Security Assessment", ava: "Agent Visibility Assessment", rt: "AI Red Teaming Assessment" };
+  var SHORT = { isa: "ISA", ava: "AVA", rt: "AI Red Teaming" };
+  function chip(k) { return '<span class="chip ' + k + '">' + (k === "rt" ? "RT" : k.toUpperCase()) + "</span>"; }
+
+  function headline(r) {
+    if (!r.picks.length) return "Not ready for any assessment yet";
+    return "Recommended: " + r.picks.map(function (k) { return SHORT[k]; }).join(", then ");
+  }
+  function seqHtml(r) {
+    if (!r.picks.length) return "";
+    return '<div class="seq">' + r.picks.map(function (k, i) { return (i ? '<span aria-hidden="true">→</span>' : "") + chip(k) + NAME[k]; }).join(" ") + "</div>";
+  }
+  function recoHtml(r) {
+    return "<strong>" + esc(headline(r)) + "</strong>" + seqHtml(r) + "<span>" + esc(r.why) + "</span>";
+  }
+
+  function nextStep(k, route, a) {
+    var pam = a.partner.pamName, edrName = label("edr", a.edr);
+    if (route === "fast") return {
+      isa: "Book the 15-minute ISA scoping call with the identity owner, and get read-only access approved.",
+      ava: "Book the 15-minute AVA scoping call, and get the " + edrName + " integration and US-hosted processing approved.",
+      rt: "Book the 20-minute RT scoping call with the target owner, and ask for the endpoint details."
+    }[k];
+    if (route === "review") return "Send the handoff note to " + pam + ". Cisco replies within 2 business days.";
+    if (route === "nurture") return {
+      isa: "Share the identity self-serve link and revisit when there's a driver or date.",
+      ava: "Revisit when the agent rollout has a date or a driver.",
+      rt: "Share the AI red teaming self-serve tool and revisit in 30 days."
+    }[k];
+    if (k === "isa") return a.roAccess === "no" ? "Find out what would allow read-only access, then revisit." : "Confirm which identity provider they use, then revisit.";
+    if (k === "ava") return !agentsInUse(a) ? "Revisit when the customer deploys AI agents."
+      : a.residency === "sovereign" ? "Data must stay in-region. Use ISA on the sovereign instance instead."
+      : "AVA needs CrowdStrike Falcon or Microsoft Defender. Use ISA instead.";
+    return a.aiUse === "builds" ? "A reachable endpoint is needed. Revisit when one can be arranged." : "Revisit when the customer builds or runs its own AI.";
+  }
+
+  function cardOrder(r) {
+    var rest = TRACKS.filter(function (k) { return !has(r.picks, k); }).sort(function (x, y) { return r.T[y].total - r.T[x].total; });
+    return r.picks.concat(rest);
+  }
+
+  function trackCard(k, r, a, showScore) {
+    var t = r.T[k], pos = r.picks.indexOf(k);
+    var html = '<div class="tcard' + (pos === 0 ? " primary" : pos === -1 ? " muted" : "") + '">' +
+      '<span class="order">' + (pos === -1 ? "Not recommended now" : pos === 0 ? "Recommended · start here" : "Recommended · " + (pos === 1 ? "second" : "third")) + "</span>" +
+      "<div>" + chip(k) + "<strong>" + NAME[k] + "</strong></div>" +
+      '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span class="num">' + t.total + "<small>/100</small></span>" +
+      '<span class="pill ' + t.route + '">' + ROUTE_TEXT[t.route] + "</span></div>";
+    if (showScore) {
+      html += '<div class="bars" style="margin-top:0">' + AREAS[k].map(function (ar) {
+        var val = t.areas[ar[0]], pct = Math.round(val / ar[2] * 100);
+        return '<div class="bar"><span>' + ar[1] + '</span><div class="track" role="img" aria-label="' + ar[1] + " " + val + " of " + ar[2] + '"><div class="fill" style="width:' + pct + '%"></div></div><span class="mono">' + val + "/" + ar[2] + "</span></div>";
+      }).join("") + "</div>";
+    }
+    if (t.why.length) html += "<ul>" + t.why.slice(0, 4).map(function (w) { return "<li>" + esc(w) + "</li>"; }).join("") + "</ul>";
+    html += '<p style="font-size:0.86rem"><strong>Next:</strong> ' + esc(nextStep(k, t.route, a)) + "</p></div>";
+    return html;
+  }
+
+  // ---------- Result ----------
+  function renderResult() {
+    var r = latest.result, a = latest.answers;
+    var html = '<div class="reco">' + recoHtml(r) + "</div>" +
+      '<div class="tracks">' + cardOrder(r).map(function (k) { return trackCard(k, r, a, false); }).join("") + "</div>" +
+      '<p class="hint">The Qualification view has the score breakdowns, the flags for each call, the go/no-go gates and a handoff note for ' + esc(a.partner.pamName) + ".</p>" +
+      '<div class="actions"><a href="#partner">Open qualification view</a><button type="button" id="btn-again">Register another customer</button></div>';
+    var box = document.getElementById("result");
+    box.innerHTML = html; box.hidden = false; form.hidden = true;
+    document.getElementById("btn-again").addEventListener("click", function () {
+      var keep = {}; ["porg", "pcountry", "pname", "ptitle", "pemail", "pphone", "pamname", "pamemail"].forEach(function (k) { keep[k] = F[k].value; });
+      form.reset();
+      Object.keys(keep).forEach(function (k) { F[k].value = keep[k]; });
+      form.hidden = false; box.hidden = true; show(2);
+    });
+  }
+
+  // ---------- Qualification view ----------
+  var EXAMPLE = {
+    partner: { org: "Northwind Integration (fictional)", country: "Singapore", name: "Daniel Lim", title: "Security pre-sales engineer", email: "daniel.lim@northwind.example", phone: "", pamName: "Alex Tan", pamEmail: "alex.tan@cisco.example" },
+    company: "Harbour Bank (fictional)", country: "Singapore", industry: "bfsi", size: "gt5k",
+    name: "Priya Nair", email: "priya.nair@harbourbank.example", ctitle: "Deputy CISO", cphone: "", role: "ciso",
+    idps: ["entra", "ad", "okta"], humans: "5to20k", singleView: "partial", mfa: "all", dormant: "annual",
+    nhiInv: "partial", nhiRot: "manual", agentsUse: ["copilot", "custom", "mcp"], agentAuth: "shared", agentVis: "partly", roAccess: "approval",
+    edr: "crowdstrike", residency: "approval",
+    aiUse: "builds", scope: ["agents", "apps"], modelType: "hosted", count: "few", stage: "launch", endpoint: "staging", prior: "adhoc",
+    drivers: ["agentrollout", "regulator"], deadline: "m3", owner: "yes", attest: true, consent: true
+  };
+  var latest = { answers: EXAMPLE, result: score(EXAMPLE), example: true };
+
+  function dl(id, rows) {
+    document.getElementById(id).innerHTML = rows.filter(function (x) { return x[1]; }).map(function (x) { return "<dt>" + x[0] + "</dt><dd>" + esc(x[1]) + "</dd>"; }).join("");
+  }
+
+  function renderPartner() {
+    var a = latest.answers, r = latest.result, pt = a.partner;
+    document.getElementById("p-who").textContent = a.company + " · " + a.name;
+    document.getElementById("p-by").textContent = "Registered by " + pt.name + ", " + pt.org;
+    document.getElementById("p-example").hidden = !latest.example;
+    document.getElementById("p-reco").innerHTML = recoHtml(r);
+    document.getElementById("p-tracks").innerHTML = cardOrder(r).map(function (k) { return trackCard(k, r, a, true); }).join("");
+
+    document.getElementById("p-flags").innerHTML = r.flags.length
+      ? r.flags.map(function (f) { return '<li class="' + f[0] + '">' + f[1].map(chip).join("") + esc(f[2]) + "</li>"; }).join("")
+      : '<li class="none">No flags. Proceed to scoping.</li>';
+
+    dl("p-partner", [
+      ["Organisation", pt.org], ["Region", pt.country], ["Contact", pt.name + (pt.title ? ", " + pt.title : "")],
+      ["Email", pt.email], ["Phone", pt.phone], ["Cisco PAM", pt.pamName + " · " + pt.pamEmail]
+    ]);
+    dl("p-customer", [
+      ["Customer", a.company], ["Country", a.country], ["Industry", label("industry", a.industry)], ["Size", label("size", a.size)],
+      ["Contact", a.name + (a.ctitle ? ", " + a.ctitle : "")], ["Email", a.email], ["Phone", a.cphone], ["Role", label("role", a.role)],
+      ["Drivers", labels("drivers", a.drivers)], ["Deadline", label("deadline", a.deadline)], ["Findings owner", label("owner", a.owner)]
+    ]);
+    var agents = agentsInUse(a);
+    dl("p-identity", [
+      ["Identity providers", labels("idps", a.idps)], ["Human identities", label("humans", a.humans)], ["Single view", label("singleView", a.singleView)],
+      ["MFA", label("mfa", a.mfa)], ["Account reviews", label("dormant", a.dormant)], ["NHI inventory", label("nhiInv", a.nhiInv)],
+      ["Credential rotation", label("nhiRot", a.nhiRot)], ["Agents in use", labels("agentsUse", a.agentsUse)],
+      ["Agent auth", agents ? label("agentAuth", a.agentAuth) : ""], ["Agent visibility", agents ? label("agentVis", a.agentVis) : ""],
+      ["Read-only access", label("roAccess", a.roAccess)], ["EDR", label("edr", a.edr)], ["US-hosted processing", label("residency", a.residency)]
+    ]);
+    var b = a.aiUse === "builds";
+    dl("p-ai", [
+      ["Own AI", label("aiUse", a.aiUse)], ["Scope", b ? labels("scope", a.scope) : ""], ["Underlying model", b ? label("modelType", a.modelType) : ""],
+      ["Targets", b ? label("count", a.count) : ""], ["Stage", b ? label("stage", a.stage) : ""], ["Endpoint", b ? label("endpoint", a.endpoint) : ""],
+      ["Prior testing", b ? label("prior", a.prior) : ""]
+    ]);
+
+    function trackLines(k) {
+      var t = r.T[k];
+      return [
+        (k === "rt" ? "RT" : k.toUpperCase()) + " (" + NAME[k] + "): " + t.total + "/100 → " + ROUTE_TEXT[t.route],
+        AREAS[k].map(function (ar) { return "  " + ar[1] + ": " + t.areas[ar[0]] + "/" + ar[2]; }).join("\n"),
+        t.why.length ? t.why.map(function (w) { return "  · " + w; }).join("\n") : "",
+        "  Next: " + nextStep(k, t.route, a)
+      ].filter(Boolean).join("\n");
+    }
+
+    var note = [
+      "IDENTITY & AI ASSESSMENTS · PARTNER REGISTRATION",
+      "Partner: " + pt.org + " (" + pt.country + ")",
+      "Registered by: " + pt.name + (pt.title ? ", " + pt.title : "") + " · " + pt.email + (pt.phone ? " · " + pt.phone : ""),
+      "Cisco PAM: " + pt.pamName + " · " + pt.pamEmail,
+      "",
+      "Customer: " + a.company + " | " + a.country + " | " + label("industry", a.industry) + " | " + label("size", a.size),
+      "Contact: " + a.name + (a.ctitle ? ", " + a.ctitle : "") + " (" + label("role", a.role) + ") · " + a.email + (a.cphone ? " · " + a.cphone : ""),
+      "",
+      headline(r).toUpperCase(),
+      r.why,
+      "",
+      cardOrder(r).map(trackLines).join("\n\n"),
+      "",
+      "Identity: " + labels("idps", a.idps) + "; " + label("humans", a.humans) + " humans; single view: " + label("singleView", a.singleView) + "; MFA: " + label("mfa", a.mfa),
+      "NHI: inventory " + label("nhiInv", a.nhiInv) + "; rotation " + label("nhiRot", a.nhiRot),
+      "Agents: " + labels("agentsUse", a.agentsUse) + (agents ? "; auth: " + label("agentAuth", a.agentAuth) + "; visibility: " + label("agentVis", a.agentVis) : ""),
+      "Read-only identity access: " + label("roAccess", a.roAccess) + "; EDR: " + label("edr", a.edr) + "; US-hosted processing: " + label("residency", a.residency),
+      "Own AI: " + label("aiUse", a.aiUse) + (b ? "; scope: " + labels("scope", a.scope) + "; " + label("modelType", a.modelType) + "; " + label("stage", a.stage) + "; endpoint: " + label("endpoint", a.endpoint) : ""),
+      "Drivers: " + labels("drivers", a.drivers) + "; deadline: " + label("deadline", a.deadline) + "; findings owner: " + label("owner", a.owner),
+      "Authorisation confirmed: " + (a.attest ? "yes" : "no") + "; consent to share with Cisco: " + (a.consent ? "yes" : "no"),
+      "",
+      "Flags:",
+      r.flags.length ? r.flags.map(function (f) { return "  - " + (f[1].length ? "[" + f[1].map(function (x) { return x === "rt" ? "RT" : x.toUpperCase(); }).join("+") + "] " : "") + f[2]; }).join("\n") : "  - none"
+    ].join("\n");
+    document.getElementById("p-note").value = note;
+  }
+
+  document.getElementById("btn-copy").addEventListener("click", function () {
+    var msg = document.getElementById("copy-msg");
+    var text = document.getElementById("p-note").value;
+    try {
+      navigator.clipboard.writeText(text).then(function () { msg.textContent = "Copied."; }, function () { msg.textContent = "Copy was blocked. Select the text and copy it manually."; });
+    } catch (e) { msg.textContent = "Copy was blocked. Select the text and copy it manually."; }
+  });
+
+  [["c-isa-link", "isaLink"], ["c-rt-link", "rtLink"]].forEach(function (x) {
+    var el = document.getElementById(x[0]); el.value = cfg[x[1]];
+    el.addEventListener("input", function () { cfg[x[1]] = el.value; saveCfg(); });
+  });
+
+  // Gates
+  function buildGate(id, items) {
+    var host = document.getElementById(id), pill = document.getElementById(id + "-pill");
+    host.innerHTML = items.map(function (g, i) { return '<label class="check" for="' + id + "-" + i + '"><input type="checkbox" id="' + id + "-" + i + '"><span>' + g + "</span></label>"; }).join("");
+    host.addEventListener("change", function () {
+      var n = host.querySelectorAll("input:checked").length;
+      pill.className = "pill " + (n === items.length ? "go" : "nogo");
+      pill.textContent = n === items.length ? "Go" : "Not ready · " + n + " of " + items.length;
+    });
+  }
+  buildGate("gate-isa", [
+    "Read-only API access approved by each identity provider's admin",
+    "Identity sources and tenants listed",
+    "Agent and non-human identity sources agreed, with basic depth explained",
+    "A named owner for the findings",
+    "Report date agreed and readout booked with the CISO or identity owner and your Cisco PAM"
+  ]);
+  buildGate("gate-ava", [
+    "CrowdStrike Falcon or Microsoft Defender API integration approved by the EDR admin",
+    "Written approval to process data on the US-hosted instance",
+    "One-week assessment dates agreed",
+    "A named owner for the findings",
+    "PDF readout booked with the security leader, the agent owner and your Cisco PAM"
+  ]);
+  buildGate("gate-rt", [
+    "Written authorisation to test, signed by someone who can grant it",
+    "Endpoint, credentials and rate limits received (or a committed date)",
+    "A named owner for the findings",
+    "1–3 custom objectives agreed from the use case",
+    "Readout booked with the security leader, the target owner and your Cisco PAM"
+  ]);
+
+  // Rubrics
+  function rows(list) {
+    return list.map(function (x) { return "<tr><td>" + x[0] + "</td><td>" + x[1] + '<br><span class="hint">' + x[2] + '</span></td><td class="mono">' + x[3] + "</td></tr>"; }).join("");
+  }
+  document.getElementById("rubric-isa").innerHTML = rows([
+    ["Readiness", "Supported identity provider", "Any listed provider 15 · Other or not sure 0", 15],
+    ["Readiness", "Read-only access", "Yes 15 · Needs approval 10 · No 0", 15],
+    ["Visibility gap", "Single view of identities", "No 8 · Partly 5 · Yes 1", 8],
+    ["Visibility gap", "MFA reach", "Partial or unknown 7 · All, mixed 4 · Phishing-resistant 1", 7],
+    ["Visibility gap", "Account reviews", "Never 7 · Annually 5 · Quarterly 2 · Continuous 0", 7],
+    ["Visibility gap", "NHI inventory", "None or unknown 7 · Partial 5 · Full 1", 7],
+    ["Visibility gap", "Agent visibility, or credential rotation if no agents", "No 6 · Partly 4 · Yes 1 / Long-lived or unknown 6 · Manual 3 · Automated 1", 6],
+    ["Trigger", "Drivers (highest counts)", "Identity incident or audit 10 · Migration, agent rollout or regulator 8 · Board 6", 10],
+    ["Trigger", "Deadline", "30 days 10 · 1–3 months 8 · 3–6 months 4 · None 0", 10],
+    ["Identity scale", "Human identities", "Over 20,000 15 · 5,000–20,000 12 · 1,000–5,000 9 · Under 1,000 5", 15]
+  ]);
+  document.getElementById("rubric-ava").innerHTML = rows([
+    ["Readiness", "EDR", "CrowdStrike Falcon or Microsoft Defender 20 · Others 0 (not eligible)", 20],
+    ["Readiness", "US-hosted processing", "Yes 15 · Needs approval or not sure 8 · Must stay in-region 0 (not eligible)", 15],
+    ["Agent gap", "Agent inventory and access", "No 12 · Partly 8 · Yes 2", 12],
+    ["Agent gap", "Agent authentication", "Delegated or unknown 12 · Shared 10 · Dedicated 2", 12],
+    ["Agent gap", "Agent platforms in use", "3 or more 11 · 2 8 · 1 5", 11],
+    ["Trigger", "Drivers (highest counts)", "Agent rollout 10 · Identity incident or regulator 8 · Board or audit 6", 10],
+    ["Trigger", "Deadline", "30 days 10 · 1–3 months 8 · 3–6 months 4 · None 0", 10],
+    ["Fit", "Company size", "Over 5,000 10 · 1,000–5,000 7 · Under 1,000 4", 10]
+  ]);
+  document.getElementById("rubric-rt").innerHTML = rows([
+    ["Target readiness", "Reachable endpoint", "Staging 15 · Production only 10 · Within 2 weeks 7 · No 0", 15],
+    ["Target readiness", "Underlying model", "Self-hosted or fine-tuned 10 · Hosted API 8 · Not sure 2", 10],
+    ["Target readiness", "Number of targets", "2 or more 5 · 1 4", 5],
+    ["Trigger", "Stage", "Launching 10 · Production 8 · Pilot 5 · Exploring 0", 10],
+    ["Trigger", "Deadline", "30 days 10 · 1–3 months 8 · 3–6 months 4 · None 0", 10],
+    ["Trigger", "Drivers (highest counts)", "Agent rollout, AI launch, model change, regulator or board 5 · Choosing models 3", 5],
+    ["Authority", "Contact's role", "CISO 10 · Risk 8 · AI/ML 7 · IAM, app or security engineer 6 · Other 2", 10],
+    ["Authority", "Owner for findings", "Yes 10 · Not sure 4 · No 0", 10],
+    ["Authority", "Prior testing", "None 5 · Informal 4 · Over 6 months 3 · Recent 1", 5],
+    ["Fit", "Industry", "Financial services 10 · Government 9 · Health or telco 8 · Others 5–6", 10],
+    ["Fit", "Company size", "Over 5,000 10 · 1,000–5,000 7 · Under 1,000 4", 10]
+  ]);
+
+  // ---------- Routing ----------
+  function route() {
+    var view = location.hash === "#partner" ? "partner" : "customer";
+    document.getElementById("view-customer").hidden = view !== "customer";
+    document.getElementById("view-partner").hidden = view !== "partner";
+    document.getElementById("tab-customer").setAttribute("aria-current", view === "customer" ? "page" : "false");
+    document.getElementById("tab-partner").setAttribute("aria-current", view === "partner" ? "page" : "false");
+    if (view === "partner") window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", route);
+  renderPartner(); show(1); route();
+  window.__score = score; window.__EX = EXAMPLE;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+IDENTITY & AI ASSESSMENTS · PARTNER REGISTRATION
+Partner: Northwind Integration (fictional) (Singapore)
+Registered by: Daniel Lim, Security pre-sales engineer · daniel.lim@northwind.example
+Cisco PAM: Alex Tan · alex.tan@cisco.example
+
+Customer: Harbour Bank (fictional) | Singapore | Banking, financial services or insurance | More than 5,000
+Contact: Priya Nair, Deputy CISO (CISO or security leadership) · priya.nair@harbourbank.example
+
+RECOMMENDED: AVA, THEN ISA, THEN AI RED TEAMING
+Run AVA for deep agent visibility through CrowdStrike Falcon (one week), and ISA for the human and non-human identity gaps. They can run in parallel. Then red team the agents and AI apps once their identities are visible.
+
+AVA (Agent Visibility Assessment): 85/100 → Fast-track
+  Readiness: 28/35
+  Agent visibility gap: 29/35
+  Trigger: 18/20
+  Fit: 10/10
+  · Can't fully list agents and what they can access
+  · Agents authenticate with shared service accounts or keys
+  · Agents on 3 different platforms
+  Next: Book the 15-minute AVA scoping call, and get the CrowdStrike Falcon integration and US-hosted processing approved.
+
+ISA (Identity Security Assessment): 76/100 → Fast-track
+  Readiness: 25/30
+  Visibility gap: 23/35
+  Trigger: 16/20
+  Identity scale: 12/15
+  · No single view of identities across directories
+  · Dormant and privileged accounts are rarely reviewed
+  Next: Book the 15-minute ISA scoping call with the identity owner, and get read-only access approved.
+
+RT (AI Red Teaming Assessment): 95/100 → Fast-track
+  Target readiness: 28/30
+  Trigger: 23/25
+  Authority to act: 24/25
+  Fit: 20/20
+  · Launching within 3 months
+  · No external adversarial testing so far
+  · Agents in scope, so tool misuse can be tested
+  Next: Book the 20-minute RT scoping call with the target owner, and ask for the endpoint details.
+
+Identity: Microsoft Entra ID, Active Directory (on-premises), Okta; 5,000 to 20,000 humans; single view: Partly, directory by directory; MFA: All users, mixed methods (push, SMS, one-time codes)
+NHI: inventory Partial; rotation Manual rotation
+Agents: Microsoft Copilot Studio or Entra Agent ID, Custom-built agents (LangChain, CrewAI…), MCP servers; auth: Shared service accounts or API keys; visibility: Partly
+Read-only identity access: Needs approval, possible within 2 weeks; EDR: CrowdStrike Falcon; US-hosted processing: Needs approval
+Own AI: Yes, its own models, agents or applications; scope: AI agents, AI applications (chatbots, copilots, RAG apps); Hosted API model (Azure OpenAI, Bedrock, Vertex AI, OpenAI, Anthropic…); Launching within 3 months; endpoint: Yes, a staging or dev endpoint
+Drivers: AI agent rollout, Regulator requirement; deadline: 1–3 months; findings owner: Yes, a named person
+Authorisation confirmed: yes; consent to share with Cisco: yes
+
+Flags:
+  - [AVA] AVA runs on a US-hosted instance. Get written approval for US processing before starting.
+  - [ISA] Read-only access needs approval. Find out who approves it and get them on the scoping call.
+  - [AVA+ISA] Agents share service accounts or keys. Ask who owns those credentials and when they were last rotated.
+  - [AVA+RT] MCP servers in use. Ask which tools they expose and how they authenticate.
+  - [RT] Hosted API model. Check the provider's terms allow adversarial testing. Token costs land on the customer.
+  - [RT] Agents in scope. List each agent's tools and data, and confirm tests can't trigger real actions.
+  - Regulatory driver. Ask which framework and what evidence the auditor expects.

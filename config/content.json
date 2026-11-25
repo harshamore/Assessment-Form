@@ -1,0 +1,189 @@
+{
+  "assessments": {
+    "isa": {
+      "short": "ISA",
+      "name": "Identity Security Assessment",
+      "bullets": [
+        "Human, non-human and AI agent identities, on a sovereign Cisco Identity Intelligence instance",
+        "Read-only API connection to the customer's identity providers. Nothing is deployed and production isn't affected.",
+        "Findings on IAM hygiene, dormant and privileged accounts, MFA strength and gaps, and unusual activity",
+        "Agent and non-human visibility is basic compared with AVA",
+        "Data can take up to 14 days to stabilise after connection"
+      ]
+    },
+    "ava": {
+      "short": "AVA",
+      "name": "Agent Visibility Assessment",
+      "bullets": [
+        "AI agent identities only, in more depth than ISA",
+        "Integrates with CrowdStrike Falcon or Microsoft Defender to find agents",
+        "Runs on a US-hosted Cisco Identity Intelligence instance",
+        "One-week assessment with a PDF readout"
+      ]
+    },
+    "rt": {
+      "short": "AI Red Teaming",
+      "name": "AI Red Teaming Assessment",
+      "bullets": [
+        "Automated adversarial testing of up to three models, agents or AI applications",
+        "Jailbreaks, prompt injection, harmful output, data and system-prompt leakage, and tool misuse for agents",
+        "A report mapped to the OWASP Top 10 for LLMs and MITRE ATLAS, and a readout"
+      ]
+    }
+  },
+  "scoping_calls": {
+    "isa": {
+      "minutes": 15,
+      "with": "The identity or IAM owner. Whoever approves read-only access must be on the call or reachable.",
+      "agenda": [
+        [
+          "0–3",
+          "Identity sources",
+          "Every identity provider and directory, with tenants, and which hold privileged accounts."
+        ],
+        [
+          "3–7",
+          "Access",
+          "Read-only API access approved by each identity provider's admin. Nothing is deployed."
+        ],
+        [
+          "7–10",
+          "Non-human and agent sources",
+          "Which to connect. Set expectations: agent and NHI visibility is basic compared with AVA."
+        ],
+        [
+          "10–12",
+          "Timeline",
+          "Data can take up to 14 days to stabilise on the sovereign instance. Agree the report date."
+        ],
+        [
+          "12–15",
+          "Readout",
+          "Book it with the CISO or identity owner and your Cisco PAM."
+        ]
+      ]
+    },
+    "ava": {
+      "minutes": 15,
+      "with": "The EDR owner and whoever owns the agent rollout.",
+      "agenda": [
+        [
+          "0–3",
+          "Agents in scope",
+          "Platforms, business units and devices where agents run."
+        ],
+        [
+          "3–7",
+          "EDR integration",
+          "CrowdStrike Falcon or Microsoft Defender API access, approved by the EDR admin."
+        ],
+        [
+          "7–10",
+          "Data residency",
+          "Written approval for processing on the US-hosted Cisco Identity Intelligence instance."
+        ],
+        [
+          "10–12",
+          "Window",
+          "Agree the one-week assessment dates."
+        ],
+        [
+          "12–15",
+          "Readout",
+          "Book the PDF readout with the security leader, the agent owner and your Cisco PAM."
+        ]
+      ]
+    },
+    "rt": {
+      "minutes": 20,
+      "with": "The model, agent or app owner. Bring the security lead if you can.",
+      "agenda": [
+        [
+          "0–3",
+          "Targets",
+          "Models, agents or apps, with versions and hosting. For agents, which tools and data they can reach."
+        ],
+        [
+          "3–8",
+          "Access",
+          "Endpoint URL, auth method, rate limits, token budget, staging or production."
+        ],
+        [
+          "8–12",
+          "Rules of engagement",
+          "Written authorisation, testing window, provider terms, who is told. No test may trigger real transactions."
+        ],
+        [
+          "12–17",
+          "Objectives",
+          "Standard categories plus 1–3 custom objectives from the use case."
+        ],
+        [
+          "17–20",
+          "Readout",
+          "Book it with the security leader, the target owner and your Cisco PAM."
+        ]
+      ]
+    }
+  },
+  "gates": {
+    "isa": [
+      "Read-only API access approved by each identity provider's admin",
+      "Identity sources and tenants listed",
+      "Agent and non-human identity sources agreed, with basic depth explained",
+      "A named owner for the findings",
+      "Report date agreed and readout booked with the CISO or identity owner and your Cisco PAM"
+    ],
+    "ava": [
+      "CrowdStrike Falcon or Microsoft Defender API integration approved by the EDR admin",
+      "Written approval to process data on the US-hosted instance",
+      "One-week assessment dates agreed",
+      "A named owner for the findings",
+      "PDF readout booked with the security leader, the agent owner and your Cisco PAM"
+    ],
+    "rt": [
+      "Written authorisation to test, signed by someone who can grant it",
+      "Endpoint, credentials and rate limits received (or a committed date)",
+      "A named owner for the findings",
+      "1–3 custom objectives agreed from the use case",
+      "Readout booked with the security leader, the target owner and your Cisco PAM"
+    ]
+  },
+  "self_serve_links": {
+    "isa": "https://www.cisco.com/site/us/en/solutions/security/identity-intelligence/index.html",
+    "rt": "https://www.cisco.com/site/us/en/products/security/ai-defense/index.html"
+  },
+  "attestations": {
+    "attest": "The customer has confirmed they own or operate the systems in scope, and will give written authorisation before any read-only connection or testing starts. For third-party hosted models, they will check that the provider's terms allow testing.",
+    "consent": "The customer has agreed to share these details with Cisco and to be contacted about these assessments."
+  },
+  "country_options": {
+    "partner": [
+      "India",
+      "Singapore",
+      "Australia",
+      "New Zealand",
+      "Japan",
+      "Greater China",
+      "ASEAN (other)",
+      "Korea",
+      "Other"
+    ],
+    "customer": [
+      "India",
+      "Singapore",
+      "Australia",
+      "New Zealand",
+      "Other Asia Pacific or Japan",
+      "Other"
+    ]
+  },
+  "intro": {
+    "title": "Find the right free assessment for your customer",
+    "lede": "Work through these discovery questions with your customer, ideally with their security, identity and AI leads on the call. The answers decide which Cisco assessments fit, and in what order. It takes about 8 minutes.",
+    "how_it_works": [
+      "Each assessment gets its own score out of 100 after an entry check. ISA needs a supported identity provider and read-only access. AVA needs AI agents in use, CrowdStrike Falcon or Microsoft Defender, and acceptance of US hosting. RT needs AI the customer builds or runs, with a reachable endpoint. Then 70 or more is fast-track, 40–69 goes to Cisco review, and under 40 is nurture. A personal email address for the customer contact caps every track at review.",
+      "When both identity assessments qualify, AVA is recommended on its own unless there are at least two human or non-human identity gaps, in which case both run. When agents are in use without clear visibility of their identities, the identity assessment goes before RT, so the agents are found before they're tested."
+    ]
+  }
+}

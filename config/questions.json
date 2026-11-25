@@ -1,0 +1,614 @@
+{
+  "role": {
+    "label": "Contact's role",
+    "multi": false,
+    "options": [
+      {
+        "value": "ciso",
+        "label": "CISO or security leadership"
+      },
+      {
+        "value": "iam",
+        "label": "Identity or IAM lead"
+      },
+      {
+        "value": "risk",
+        "label": "Risk, compliance or audit"
+      },
+      {
+        "value": "ai",
+        "label": "AI, ML or data science"
+      },
+      {
+        "value": "app",
+        "label": "Application or product owner"
+      },
+      {
+        "value": "seceng",
+        "label": "Security engineer or architect"
+      },
+      {
+        "value": "other",
+        "label": "Other"
+      }
+    ]
+  },
+  "idps": {
+    "label": "Identity providers",
+    "multi": true,
+    "options": [
+      {
+        "value": "entra",
+        "label": "Microsoft Entra ID"
+      },
+      {
+        "value": "ad",
+        "label": "Active Directory (on-premises)"
+      },
+      {
+        "value": "okta",
+        "label": "Okta"
+      },
+      {
+        "value": "ping",
+        "label": "Ping Identity"
+      },
+      {
+        "value": "google",
+        "label": "Google Workspace"
+      },
+      {
+        "value": "duo",
+        "label": "Cisco Duo"
+      },
+      {
+        "value": "other",
+        "label": "Other or not sure"
+      }
+    ]
+  },
+  "humans": {
+    "label": "Human identities",
+    "multi": false,
+    "options": [
+      {
+        "value": "lt1k",
+        "label": "Fewer than 1,000"
+      },
+      {
+        "value": "1to5k",
+        "label": "1,000 to 5,000"
+      },
+      {
+        "value": "5to20k",
+        "label": "5,000 to 20,000"
+      },
+      {
+        "value": "gt20k",
+        "label": "More than 20,000"
+      }
+    ]
+  },
+  "singleView": {
+    "label": "Single view of identities",
+    "multi": false,
+    "options": [
+      {
+        "value": "yes",
+        "label": "Yes, one consolidated view"
+      },
+      {
+        "value": "partial",
+        "label": "Partly, directory by directory"
+      },
+      {
+        "value": "no",
+        "label": "No"
+      }
+    ]
+  },
+  "mfa": {
+    "label": "MFA reach",
+    "multi": false,
+    "options": [
+      {
+        "value": "phish",
+        "label": "All users, phishing-resistant (FIDO2, passkeys)"
+      },
+      {
+        "value": "all",
+        "label": "All users, mixed methods (push, SMS, one-time codes)"
+      },
+      {
+        "value": "partial",
+        "label": "Some users or apps only"
+      },
+      {
+        "value": "unknown",
+        "label": "Don't know"
+      }
+    ]
+  },
+  "dormant": {
+    "label": "Dormant and privileged account reviews",
+    "multi": false,
+    "options": [
+      {
+        "value": "cont",
+        "label": "Continuously or monthly"
+      },
+      {
+        "value": "quarterly",
+        "label": "Quarterly"
+      },
+      {
+        "value": "annual",
+        "label": "Annually or ad hoc"
+      },
+      {
+        "value": "never",
+        "label": "Never or don't know"
+      }
+    ]
+  },
+  "nhiInv": {
+    "label": "Non-human identity inventory",
+    "multi": false,
+    "options": [
+      {
+        "value": "full",
+        "label": "Full inventory with owners"
+      },
+      {
+        "value": "partial",
+        "label": "Partial"
+      },
+      {
+        "value": "none",
+        "label": "None"
+      },
+      {
+        "value": "unknown",
+        "label": "Don't know"
+      }
+    ]
+  },
+  "nhiRot": {
+    "label": "Credential rotation",
+    "multi": false,
+    "options": [
+      {
+        "value": "auto",
+        "label": "Automated rotation and expiry"
+      },
+      {
+        "value": "manual",
+        "label": "Manual rotation"
+      },
+      {
+        "value": "none",
+        "label": "Long-lived, rarely rotated"
+      },
+      {
+        "value": "unknown",
+        "label": "Don't know"
+      }
+    ]
+  },
+  "agentsUse": {
+    "label": "AI agents in use",
+    "multi": true,
+    "options": [
+      {
+        "value": "copilot",
+        "label": "Microsoft Copilot Studio or Entra Agent ID"
+      },
+      {
+        "value": "openai",
+        "label": "OpenAI (ChatGPT Enterprise, Agents SDK)"
+      },
+      {
+        "value": "saas",
+        "label": "Agents inside SaaS (Salesforce, ServiceNow…)"
+      },
+      {
+        "value": "custom",
+        "label": "Custom-built agents (LangChain, CrewAI…)"
+      },
+      {
+        "value": "mcp",
+        "label": "MCP servers"
+      },
+      {
+        "value": "none",
+        "label": "None yet"
+      }
+    ]
+  },
+  "agentAuth": {
+    "label": "Agent authentication",
+    "multi": false,
+    "options": [
+      {
+        "value": "dedicated",
+        "label": "Dedicated agent identities"
+      },
+      {
+        "value": "shared",
+        "label": "Shared service accounts or API keys"
+      },
+      {
+        "value": "delegated",
+        "label": "Users' own delegated credentials"
+      },
+      {
+        "value": "unknown",
+        "label": "Don't know"
+      }
+    ]
+  },
+  "agentVis": {
+    "label": "Agent inventory and access",
+    "multi": false,
+    "options": [
+      {
+        "value": "yes",
+        "label": "Yes"
+      },
+      {
+        "value": "partly",
+        "label": "Partly"
+      },
+      {
+        "value": "no",
+        "label": "No"
+      }
+    ]
+  },
+  "roAccess": {
+    "label": "Read-only identity access",
+    "multi": false,
+    "options": [
+      {
+        "value": "yes",
+        "label": "Yes"
+      },
+      {
+        "value": "approval",
+        "label": "Needs approval, possible within 2 weeks"
+      },
+      {
+        "value": "no",
+        "label": "No"
+      }
+    ]
+  },
+  "edr": {
+    "label": "EDR",
+    "multi": false,
+    "options": [
+      {
+        "value": "crowdstrike",
+        "label": "CrowdStrike Falcon"
+      },
+      {
+        "value": "defender",
+        "label": "Microsoft Defender for Endpoint"
+      },
+      {
+        "value": "cisco",
+        "label": "Cisco Secure Endpoint"
+      },
+      {
+        "value": "s1",
+        "label": "SentinelOne"
+      },
+      {
+        "value": "other",
+        "label": "Other or none"
+      }
+    ]
+  },
+  "residency": {
+    "label": "US-hosted processing",
+    "multi": false,
+    "options": [
+      {
+        "value": "us",
+        "label": "Yes, a US-hosted instance is fine"
+      },
+      {
+        "value": "approval",
+        "label": "Needs approval"
+      },
+      {
+        "value": "sovereign",
+        "label": "No, data must stay in-country or in-region"
+      },
+      {
+        "value": "unsure",
+        "label": "Not sure"
+      }
+    ]
+  },
+  "aiUse": {
+    "label": "Builds or runs own AI",
+    "multi": false,
+    "options": [
+      {
+        "value": "builds",
+        "label": "Yes, its own models, agents or applications"
+      },
+      {
+        "value": "saasonly",
+        "label": "Only uses SaaS AI tools (Copilot, ChatGPT and similar)"
+      },
+      {
+        "value": "none",
+        "label": "Not yet"
+      }
+    ]
+  },
+  "scope": {
+    "label": "Scope",
+    "multi": true,
+    "options": [
+      {
+        "value": "models",
+        "label": "AI models"
+      },
+      {
+        "value": "agents",
+        "label": "AI agents"
+      },
+      {
+        "value": "apps",
+        "label": "AI applications (chatbots, copilots, RAG apps)"
+      }
+    ]
+  },
+  "modelType": {
+    "label": "Underlying model",
+    "multi": false,
+    "options": [
+      {
+        "value": "hosted",
+        "label": "Hosted API model (Azure OpenAI, Bedrock, Vertex AI, OpenAI, Anthropic…)"
+      },
+      {
+        "value": "selfhosted",
+        "label": "Open-weight model they host (Llama, Mistral, Qwen…)"
+      },
+      {
+        "value": "finetuned",
+        "label": "Fine-tuned or custom-trained model"
+      },
+      {
+        "value": "unsure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  "count": {
+    "label": "Number of targets",
+    "multi": false,
+    "options": [
+      {
+        "value": "one",
+        "label": "1"
+      },
+      {
+        "value": "few",
+        "label": "2–3"
+      },
+      {
+        "value": "many",
+        "label": "4 or more"
+      }
+    ]
+  },
+  "stage": {
+    "label": "Stage",
+    "multi": false,
+    "options": [
+      {
+        "value": "prod",
+        "label": "In production"
+      },
+      {
+        "value": "launch",
+        "label": "Launching within 3 months"
+      },
+      {
+        "value": "pilot",
+        "label": "Pilot or proof of concept"
+      },
+      {
+        "value": "explore",
+        "label": "Exploring"
+      }
+    ]
+  },
+  "endpoint": {
+    "label": "Reachable endpoint",
+    "multi": false,
+    "options": [
+      {
+        "value": "staging",
+        "label": "Yes, a staging or dev endpoint"
+      },
+      {
+        "value": "prod",
+        "label": "Yes, production only"
+      },
+      {
+        "value": "soon",
+        "label": "Can arrange within 2 weeks"
+      },
+      {
+        "value": "no",
+        "label": "No"
+      }
+    ]
+  },
+  "prior": {
+    "label": "Prior adversarial testing",
+    "multi": false,
+    "options": [
+      {
+        "value": "none",
+        "label": "No"
+      },
+      {
+        "value": "adhoc",
+        "label": "Informal internal testing"
+      },
+      {
+        "value": "old",
+        "label": "External test over 6 months ago"
+      },
+      {
+        "value": "recent",
+        "label": "External test in the last 6 months"
+      }
+    ]
+  },
+  "drivers": {
+    "label": "Drivers",
+    "multi": true,
+    "options": [
+      {
+        "value": "idincident",
+        "label": "Identity incident or account takeover"
+      },
+      {
+        "value": "audit",
+        "label": "Access or privileged-account audit"
+      },
+      {
+        "value": "idp",
+        "label": "Identity platform migration or consolidation"
+      },
+      {
+        "value": "agentrollout",
+        "label": "AI agent rollout"
+      },
+      {
+        "value": "ailaunch",
+        "label": "AI app or model launch"
+      },
+      {
+        "value": "modelchange",
+        "label": "Model change or fine-tune"
+      },
+      {
+        "value": "regulator",
+        "label": "Regulator requirement"
+      },
+      {
+        "value": "board",
+        "label": "Board or leadership asked"
+      },
+      {
+        "value": "vendor",
+        "label": "Choosing between models"
+      },
+      {
+        "value": "curious",
+        "label": "General interest"
+      }
+    ]
+  },
+  "deadline": {
+    "label": "Deadline",
+    "multi": false,
+    "options": [
+      {
+        "value": "d30",
+        "label": "Within 30 days"
+      },
+      {
+        "value": "m3",
+        "label": "1–3 months"
+      },
+      {
+        "value": "m6",
+        "label": "3–6 months"
+      },
+      {
+        "value": "none",
+        "label": "No date"
+      }
+    ]
+  },
+  "owner": {
+    "label": "Owner for findings",
+    "multi": false,
+    "options": [
+      {
+        "value": "yes",
+        "label": "Yes, a named person"
+      },
+      {
+        "value": "unsure",
+        "label": "Not sure"
+      },
+      {
+        "value": "no",
+        "label": "No"
+      }
+    ]
+  },
+  "industry": {
+    "label": "Industry",
+    "multi": false,
+    "options": [
+      {
+        "value": "bfsi",
+        "label": "Banking, financial services or insurance"
+      },
+      {
+        "value": "gov",
+        "label": "Government or public sector"
+      },
+      {
+        "value": "health",
+        "label": "Healthcare or life sciences"
+      },
+      {
+        "value": "telco",
+        "label": "Telecommunications"
+      },
+      {
+        "value": "retail",
+        "label": "Retail or consumer"
+      },
+      {
+        "value": "tech",
+        "label": "Technology or software"
+      },
+      {
+        "value": "other",
+        "label": "Other"
+      }
+    ]
+  },
+  "size": {
+    "label": "Company size",
+    "multi": false,
+    "options": [
+      {
+        "value": "lt1k",
+        "label": "Fewer than 1,000 employees"
+      },
+      {
+        "value": "1to5k",
+        "label": "1,000 to 5,000"
+      },
+      {
+        "value": "gt5k",
+        "label": "More than 5,000"
+      }
+    ]
+  }
+}

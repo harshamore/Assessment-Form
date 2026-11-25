@@ -1,0 +1,254 @@
+{
+  "example": {
+    "partner": {
+      "org": "Northwind Integration (fictional)",
+      "country": "Singapore",
+      "name": "Daniel Lim",
+      "title": "Security pre-sales engineer",
+      "email": "daniel.lim@northwind.example",
+      "phone": "",
+      "pamName": "Alex Tan",
+      "pamEmail": "alex.tan@cisco.example"
+    },
+    "company": "Harbour Bank (fictional)",
+    "country": "Singapore",
+    "industry": "bfsi",
+    "size": "gt5k",
+    "name": "Priya Nair",
+    "email": "priya.nair@harbourbank.example",
+    "ctitle": "Deputy CISO",
+    "cphone": "",
+    "role": "ciso",
+    "idps": [
+      "entra",
+      "ad",
+      "okta"
+    ],
+    "humans": "5to20k",
+    "singleView": "partial",
+    "mfa": "all",
+    "dormant": "annual",
+    "nhiInv": "partial",
+    "nhiRot": "manual",
+    "agentsUse": [
+      "copilot",
+      "custom",
+      "mcp"
+    ],
+    "agentAuth": "shared",
+    "agentVis": "partly",
+    "roAccess": "approval",
+    "edr": "crowdstrike",
+    "residency": "approval",
+    "aiUse": "builds",
+    "scope": [
+      "agents",
+      "apps"
+    ],
+    "modelType": "hosted",
+    "count": "few",
+    "stage": "launch",
+    "endpoint": "staging",
+    "prior": "adhoc",
+    "drivers": [
+      "agentrollout",
+      "regulator"
+    ],
+    "deadline": "m3",
+    "owner": "yes",
+    "attest": true,
+    "consent": true
+  },
+  "scenarios": {
+    "example": {
+      "overrides": {},
+      "isa": [
+        76,
+        "fast"
+      ],
+      "ava": [
+        85,
+        "fast"
+      ],
+      "rt": [
+        95,
+        "fast"
+      ],
+      "picks": [
+        "ava",
+        "isa",
+        "rt"
+      ],
+      "flags": 7,
+      "why": "Run AVA for deep agent visibility through CrowdStrike Falcon (one week), and ISA for the human and non-human identity gaps. They can run in parallel. Then red team the agents and AI apps once their identities are visible."
+    },
+    "sovereign": {
+      "overrides": {
+        "residency": "sovereign"
+      },
+      "isa": [
+        76,
+        "fast"
+      ],
+      "ava": [
+        77,
+        "notready"
+      ],
+      "rt": [
+        95,
+        "fast"
+      ],
+      "picks": [
+        "isa",
+        "rt"
+      ],
+      "flags": 7,
+      "why": "ISA covers human, non-human and agent identities on the sovereign instance. Agent visibility will be basic, because AVA isn't possible: data must stay in-region. Then red team the agents and AI apps once their identities are visible."
+    },
+    "s1_edr": {
+      "overrides": {
+        "edr": "s1"
+      },
+      "isa": [
+        76,
+        "fast"
+      ],
+      "ava": [
+        65,
+        "notready"
+      ],
+      "rt": [
+        95,
+        "fast"
+      ],
+      "picks": [
+        "isa",
+        "rt"
+      ],
+      "flags": 8,
+      "why": "ISA covers human, non-human and agent identities on the sovereign instance. Agent visibility will be basic, because AVA isn't possible: it needs CrowdStrike Falcon or Microsoft Defender. Then red team the agents and AI apps once their identities are visible."
+    },
+    "good_hygiene": {
+      "overrides": {
+        "singleView": "yes",
+        "mfa": "phish",
+        "dormant": "cont",
+        "nhiInv": "full"
+      },
+      "isa": [
+        60,
+        "review"
+      ],
+      "ava": [
+        85,
+        "fast"
+      ],
+      "rt": [
+        95,
+        "fast"
+      ],
+      "picks": [
+        "ava",
+        "rt"
+      ],
+      "flags": 7,
+      "why": "Agents are the main identity gap and CrowdStrike Falcon is in place, so AVA gives deep agent visibility in one week. Human identity hygiene looks reasonable, so ISA can wait. Then red team the agents and AI apps once their identities are visible."
+    },
+    "saas_only": {
+      "overrides": {
+        "agentsUse": [
+          "none"
+        ],
+        "aiUse": "saasonly"
+      },
+      "isa": [
+        75,
+        "fast"
+      ],
+      "ava": [
+        0,
+        "notready"
+      ],
+      "rt": [
+        0,
+        "notready"
+      ],
+      "picks": [
+        "isa"
+      ],
+      "flags": 2,
+      "why": "ISA covers human, non-human and agent identities on the sovereign instance."
+    },
+    "nothing": {
+      "overrides": {
+        "agentsUse": [
+          "none"
+        ],
+        "aiUse": "none",
+        "roAccess": "no"
+      },
+      "isa": [
+        65,
+        "notready"
+      ],
+      "ava": [
+        0,
+        "notready"
+      ],
+      "rt": [
+        0,
+        "notready"
+      ],
+      "picks": [],
+      "flags": 1,
+      "why": "None of the three assessments is ready. Use the nurture steps and revisit in 30 days."
+    },
+    "personal_email": {
+      "overrides": {
+        "email": "priya@gmail.com"
+      },
+      "isa": [
+        76,
+        "review"
+      ],
+      "ava": [
+        85,
+        "review"
+      ],
+      "rt": [
+        95,
+        "review"
+      ],
+      "picks": [
+        "ava",
+        "isa",
+        "rt"
+      ],
+      "flags": 8,
+      "why": "Run AVA for deep agent visibility through CrowdStrike Falcon (one week), and ISA for the human and non-human identity gaps. They can run in parallel. Then red team the agents and AI apps once their identities are visible."
+    },
+    "no_endpoint": {
+      "overrides": {
+        "endpoint": "no"
+      },
+      "isa": [
+        76,
+        "fast"
+      ],
+      "ava": [
+        85,
+        "fast"
+      ],
+      "rt": [
+        80,
+        "notready"
+      ],
+      "picks": [
+        "ava",
+        "isa"
+      ],
+      "flags": 7,
+      "why": "Run AVA for deep agent visibility through CrowdStrike Falcon (one week), and ISA for the human and non-human identity gaps. They can run in parallel."
+    }
+  }
+}

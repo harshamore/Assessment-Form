@@ -1,0 +1,60 @@
+{
+  "partner": {
+    "org": "Northwind Integration (fictional)",
+    "country": "Singapore",
+    "name": "Daniel Lim",
+    "title": "Security pre-sales engineer",
+    "email": "daniel.lim@northwind.example",
+    "phone": "",
+    "pamName": "Alex Tan",
+    "pamEmail": "alex.tan@cisco.example"
+  },
+  "company": "Harbour Bank (fictional)",
+  "country": "Singapore",
+  "industry": "bfsi",
+  "size": "gt5k",
+  "name": "Priya Nair",
+  "email": "priya.nair@harbourbank.example",
+  "ctitle": "Deputy CISO",
+  "cphone": "",
+  "role": "ciso",
+  "idps": [
+    "entra",
+    "ad",
+    "okta"
+  ],
+  "humans": "5to20k",
+  "singleView": "partial",
+  "mfa": "all",
+  "dormant": "annual",
+  "nhiInv": "partial",
+  "nhiRot": "manual",
+  "agentsUse": [
+    "copilot",
+    "custom",
+    "mcp"
+  ],
+  "agentAuth": "shared",
+  "agentVis": "partly",
+  "roAccess": "approval",
+  "edr": "crowdstrike",
+  "residency": "approval",
+  "aiUse": "builds",
+  "scope": [
+    "agents",
+    "apps"
+  ],
+  "modelType": "hosted",
+  "count": "few",
+  "stage": "launch",
+  "endpoint": "staging",
+  "prior": "adhoc",
+  "drivers": [
+    "agentrollout",
+    "regulator"
+  ],
+  "deadline": "m3",
+  "owner": "yes",
+  "attest": true,
+  "consent": true
+}
